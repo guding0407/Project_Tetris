@@ -105,7 +105,7 @@ int main()
 
     while (1)
     {
-        int is_gameover = 0;   // ★ 매 판 시작 시 리셋
+        int is_gameover = 0;   // 매 판 시작 시 리셋
 
         input_data();
         show_total_block();
@@ -167,16 +167,20 @@ int main()
                 show_cur_block(block_shape, block_angle, block_x, block_y);
             }
 
-            if (stage_data[level].clear_line == lines)    // 스테이지 클리어
+            if (stage_data[level].clear_line <= lines)    // 스테이지 클리어
             {
+
                 level++;
                 lines = 0;
+                show_gamestat();
+                show_total_block();
+                show_next_block(next_block_shape);
             }
             if (is_gameover == 1)
             {
                 show_gameover();
                 SetColor(GRAY);
-                system("cls"); // ★ 혹시 남은 잔상까지 정리
+                system("cls"); // 혹시 남은 잔상까지 정리
                 break;
             }
 
@@ -235,10 +239,10 @@ int init()
 
     stage_data[0].speed = 40;
     stage_data[0].stick_rate = 20;
-    stage_data[0].clear_line = 20;
+    stage_data[0].clear_line = 1;
     stage_data[1].speed = 38;
     stage_data[1].stick_rate = 18;
-    stage_data[1].clear_line = 20;
+    stage_data[1].clear_line = 1;
     stage_data[2].speed = 35;
     stage_data[2].stick_rate = 18;
     stage_data[2].clear_line = 20;
@@ -420,7 +424,7 @@ int show_gameover()
     printf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
     Sleep(1000);
 
-    _getch();
+    (void)_getch();
     system("cls");
 
     return 0;
@@ -499,7 +503,7 @@ int check_full_line()
 int show_next_block(int shape)
 {
     int i, j;
-    SetColor((level + 1) % 6 + 1);
+    SetColor((level) % 6 + 1);
     for (i = 1; i < 7; i++)
     {
         gotoxy(33, i);
@@ -586,7 +590,7 @@ int input_data()
 int show_logo()
 {
     int i, j;
-    gotoxy(13, 3); 
+    gotoxy(13, 3);
     printf("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓");
     Sleep(100);
     gotoxy(13, 4);
@@ -610,12 +614,12 @@ int show_logo()
     gotoxy(28, 20);
     printf("Please Press Any Key~!");
 
-    for (i = 0; i >= 0; i++) {
+    for (i = 0;; i++) {
         if (i % 40 == 0)
         {
             for (j = 0; j < 5; j++)
             {
-                gotoxy(18, 14 + j);
+                gotoxy(17, 14 + j);
                 printf("                                                          ");
             }
             show_cur_block(rand() % 7, rand() % 4, 6, 14);
@@ -628,7 +632,7 @@ int show_logo()
         Sleep(30);
     }
 
-    _getch();
+    (void)_getch();
     system("cls");
 
     return 0;
