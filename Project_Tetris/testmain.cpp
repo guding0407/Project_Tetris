@@ -1,5 +1,6 @@
 #include "TetrisGame.h"
 
+
 int main() {
     // 랜덤 시드 초기화
     srand((unsigned)time(NULL));
@@ -8,6 +9,7 @@ int main() {
     TetrisGame game;
     game.run();
 
+    //테스트용 주석입니다.
     // 안녕하세용
     //안녕하세요
 
