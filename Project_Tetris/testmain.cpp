@@ -1,12 +1,16 @@
-#include "Tetris.h"
+#include "TetrisGame.h"
 
 int main() {
-    // Å×Æ®¸®½º °´Ã¼ »ı¼º
-    Tetris game;
+    // ëœë¤ ì‹œë“œ ì´ˆê¸°í™”
+    srand((unsigned)time(NULL));
 
-    // °ÔÀÓ ½ÇÇà
+    // ê²Œì„ ê°ì²´ ìƒì„± ë° ì‹¤í–‰
+    TetrisGame game;
     game.run();
     // ±èµµÇö
+
+    // ì•ˆë…•í•˜ì„¸ìš©
+    //ì•ˆë…•í•˜ì„¸ìš”
 
     return 0;
 }
