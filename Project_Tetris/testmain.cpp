@@ -7,6 +7,6 @@ int main() {
     // 게임 객체 생성 및 실행
     TetrisGame game;
     game.run();
-
+    //안녕하세요
     return 0;
 }
