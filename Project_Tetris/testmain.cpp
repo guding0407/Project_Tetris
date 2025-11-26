@@ -1,5 +1,6 @@
 #include "TetrisGame.h"
 
+
 int main() {
     // 랜덤 시드 초기화
     srand((unsigned)time(NULL));
