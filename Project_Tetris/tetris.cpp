@@ -1,639 +1,472 @@
+#include "Tetris.h"
 #include <stdio.h>
 #include <conio.h>
-#include <string.h>
-#include <Windows.h>
 #include <time.h>
-#include <stdlib.h> // strtol
+#include <stdlib.h>
+#include <iostream>
 
-//*********************************
-// 상수 선언
-//*********************************
+using namespace std;
 
-// _getch() 확장키 prefix는 0 또는 0xE0
-#define KEY_LEFT   0x4b
-#define KEY_RIGHT  0x4d
-#define KEY_UP     0x48
-#define KEY_DOWN   0x50
-
-//*********************************
-// 구조체 선언
-//*********************************
-struct STAGE {        // 각 스테이지마다의 난이도 설정
-    int speed;       // 숫자가 낮을수록 속도가 빠르다
-    int stick_rate;  // 막대가 나오는 확률 0~99 , 99면 막대기만 나옴
-    int clear_line;
+// 정적 멤버 변수 초기화 (블럭 모양 데이터)
+char Tetris::block_model[7][4][4][4] = {
+    // 막대
+    { {0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0}, {0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0}, {0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0}, {0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0} },
+    // 네모
+    { {1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0}, {1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0}, {1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0}, {1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0} },
+    // ㅓ
+    { {0,1,0,0,1,1,0,0,0,1,0,0,0,0,0,0}, {1,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0}, {1,0,0,0,1,1,0,0,1,0,0,0,0,0,0,0}, {0,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0} },
+    // ㄱ
+    { {1,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0}, {1,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0}, {1,0,0,0,1,0,0,0,1,1,0,0,0,0,0,0}, {0,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0} },
+    // ㄴ
+    { {1,1,0,0,1,0,0,0,1,0,0,0,0,0,0,0}, {1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0}, {0,1,0,0,0,1,0,0,1,1,0,0,0,0,0,0}, {1,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0} },
+    // Z
+    { {1,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0}, {0,1,0,0,1,1,0,0,1,0,0,0,0,0,0,0}, {1,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0}, {0,1,0,0,1,1,0,0,1,0,0,0,0,0,0,0} },
+    // S
+    { {0,1,1,0,1,1,0,0,0,0,0,0,0,0,0,0}, {1,0,0,0,1,1,0,0,0,1,0,0,0,0,0,0}, {0,1,1,0,1,1,0,0,0,0,0,0,0,0,0,0}, {1,0,0,0,1,1,0,0,0,1,0,0,0,0,0,0} }
 };
 
-enum {
-    BLACK,        /*  0 : 까망 */
-    DARK_BLUE,    /*  1 : 어두운 파랑 */
-    DARK_GREEN,   /*  2 : 어두운 초록 */
-    DARK_SKY_BLUE,/*  3 : 어두운 하늘 */
-    DARK_RED,     /*  4 : 어두운 빨강 */
-    DARK_VOILET,  /*  5 : 어두운 보라 */
-    DARK_YELLOW,  /*  6 : 어두운 노랑 */
-    GRAY,         /*  7 : 회색 */
-    DARK_GRAY,    /*  8 : 어두운 회색 */
-    BLUE,         /*  9 : 파랑 */
-    GREEN,        /* 10 : 초록 */
-    SKY_BLUE,     /* 11 : 하늘 */
-    RED,          /* 12 : 빨강 */
-    VOILET,       /* 13 : 보라 */
-    YELLOW,       /* 14 : 노랑 */
-    WHITE,        /* 15 : 하양 */
-};
+// 생성자: 게임 데이터 초기화
+Tetris::Tetris() {
+    ab_x = 5;
+    ab_y = 1;
+    level = 0;
+    score = 0;
+    lines = 0;
+    hud_drawn = 0;
 
-//*********************************
-// 전역변수선언
-//*********************************
-int level;
-int ab_x, ab_y;    // 화면 중 블럭의 절대 위치
-int block_shape, block_angle, block_x, block_y;
-int next_block_shape;
-int score;
-int lines;
-int hud_drawn;    // HUD(STAGE/SCORE/LINES) 그렸는지 여부 (게임 재시작 시 초기화)
-char total_block[21][14];        // 화면에 표시되는 블럭들
-struct STAGE stage_data[10];
+    // 스테이지 데이터 설정
+    stage_data[0] = { 40, 20, 1 };
+    stage_data[1] = { 38, 18, 1 };
+    stage_data[2] = { 35, 18, 20 };
+    stage_data[3] = { 30, 17, 20 };
+    stage_data[4] = { 25, 16, 20 };
+    stage_data[5] = { 20, 14, 20 };
+    stage_data[6] = { 15, 14, 20 };
+    stage_data[7] = { 10, 13, 20 };
+    stage_data[8] = { 6, 12, 20 };
+    stage_data[9] = { 4, 11, 99999 };
 
-// block[shape][angle][row][col]
-char block[7][4][4][4] = {
-    //막대모양
-    1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,  1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,  1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,  1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
-    //네모모양
-    1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,  1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,  1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,  1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,
-    //'ㅓ' 모양
-    0,1,0,0,1,1,0,0,0,1,0,0,0,0,0,0,  1,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,  1,0,0,0,1,1,0,0,1,0,0,0,0,0,0,0,  0,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,
-    //'ㄱ'모양
-    1,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,  1,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,  1,0,0,0,1,0,0,0,1,1,0,0,0,0,0,0,  0,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,
-    //'ㄴ' 모양
-    1,1,0,0,1,0,0,0,1,0,0,0,0,0,0,0,  1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,  0,1,0,0,0,1,0,0,1,1,0,0,0,0,0,0,  1,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,
-    //'Z' 모양
-    1,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,  0,1,0,0,1,1,0,0,1,0,0,0,0,0,0,0,  1,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,  0,1,0,0,1,1,0,0,1,0,0,0,0,0,0,0,
-    //'S' 모양
-    0,1,1,0,1,1,0,0,0,0,0,0,0,0,0,0,  1,0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,  0,1,1,0,1,1,0,0,0,0,0,0,0,0,0,0,  1,0,0,0,1,1,0,0,0,1,0,0,0,0,0,0
-};
-
-//*********************************
-// 함수 선언
-//*********************************
-int gotoxy(int x, int y);                     // 커서 옮기기
-void SetColor(int color);                    // 색 표현
-int init();                                  // 각종변수 초기화
-int show_cur_block(int shape, int angle, int x, int y);
-int erase_cur_block(int shape, int angle, int x, int y);
-int show_total_block();
-int show_next_block(int shape);
-int make_new_block();                        // block 모양 번호 반환
-int strike_check(int shape, int angle, int x, int y);
-int merge_block(int shape, int angle, int x, int y);
-int block_start(int shape, int* angle, int* x, int* y);
-int move_block(int* shape, int* angle, int* x, int* y, int* next_shape);
-int rotate_block(int shape, int* angle, int* x, int* y);
-int show_gameover();
-int show_gamestat();
-int show_logo();
-int input_data();
-int check_full_line();
-
-int main()
-{
-    int i;
-
-    init();
-    show_logo();
-
-    while (1)
-    {
-        int is_gameover = 0;   // 매 판 시작 시 리셋
-
-        input_data();
-        show_total_block();
-
-        block_shape = make_new_block();
-        next_block_shape = make_new_block();
-        show_next_block(next_block_shape);
-        block_start(block_shape, &block_angle, &block_x, &block_y);
-        show_gamestat();
-
-        for (i = 1; 1; i++)
-        {
-            if (_kbhit())
-            {
-                // 키 입력 처리: _getch(), int, prefix 0/0xE0
-                int prefix = _getch();
-                if (prefix == 0 || prefix == 0xE0) {
-                    int key = _getch();
-                    switch (key)
-                    {
-                    case KEY_UP:        // 회전
-                        if (strike_check(block_shape, (block_angle + 1) % 4, block_x, block_y) == 0)
-                        {
-                            erase_cur_block(block_shape, block_angle, block_x, block_y);
-                            block_angle = (block_angle + 1) % 4;
-                            show_cur_block(block_shape, block_angle, block_x, block_y);
-                        }
-                        break;
-                    case KEY_LEFT:      // 왼쪽 이동
-                        erase_cur_block(block_shape, block_angle, block_x, block_y);
-                        block_x--;
-                        if (strike_check(block_shape, block_angle, block_x, block_y))
-                            block_x++;
-                        show_cur_block(block_shape, block_angle, block_x, block_y);
-                        break;
-                    case KEY_RIGHT:     // 오른쪽 이동
-                        erase_cur_block(block_shape, block_angle, block_x, block_y);
-                        block_x++;
-                        if (strike_check(block_shape, block_angle, block_x, block_y))
-                            block_x--;
-                        show_cur_block(block_shape, block_angle, block_x, block_y);
-                        break;
-                    case KEY_DOWN:      // 아래 이동
-                        is_gameover = move_block(&block_shape, &block_angle, &block_x, &block_y, &next_block_shape);
-                        show_cur_block(block_shape, block_angle, block_x, block_y);
-                        break;
-                    }
-                }
-                else if (prefix == 32) { // 스페이스바(하드드롭)
-                    while (is_gameover == 0)
-                        is_gameover = move_block(&block_shape, &block_angle, &block_x, &block_y, &next_block_shape);
-                    show_cur_block(block_shape, block_angle, block_x, block_y);
-                }
-            }
-
-            if (i % stage_data[level].speed == 0)
-            {
-                is_gameover = move_block(&block_shape, &block_angle, &block_x, &block_y, &next_block_shape);
-                show_cur_block(block_shape, block_angle, block_x, block_y);
-            }
-
-            if (stage_data[level].clear_line <= lines)    // 스테이지 클리어
-            {
-
-                level++;
-                lines = 0;
-                show_gamestat();
-                show_total_block();
-                show_next_block(next_block_shape);
-            }
-            if (is_gameover == 1)
-            {
-                show_gameover();
-                SetColor(GRAY);
-                system("cls"); // 혹시 남은 잔상까지 정리
-                break;
-            }
-
-            gotoxy(77, 23);
-            Sleep(15);
-            gotoxy(77, 23);
-        }
-        init();
-    }
-    return 0;
+    srand((unsigned)time(NULL));
+    initGame();
 }
 
-int gotoxy(int x, int y)
-{
+// 화면 좌표 이동 헬퍼
+void Tetris::gotoxy(int x, int y) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     COORD pos;
     pos.Y = y;
     pos.X = x;
     SetConsoleCursorPosition(hConsole, pos);
-    return 0;
 }
 
-void SetColor(int color)
-{
-    static HANDLE std_output_handle = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(std_output_handle, color);
+// 색상 변경 헬퍼
+void Tetris::setColor(int color) {
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }
 
-int init()
-{
-    int i, j;
-
-    srand((unsigned)time(NULL));
-
-    for (i = 0; i < 20; i++)
-    {
-        for (j = 0; j < 14; j++)
-        {
-            if ((j == 0) || (j == 13))
-                total_block[i][j] = 1;
-            else
-                total_block[i][j] = 0;
+// 게임판 초기화
+void Tetris::initGame() {
+    for (int i = 0; i < 20; i++) {
+        for (int j = 0; j < 14; j++) {
+            if (j == 0 || j == 13) total_block[i][j] = 1;
+            else total_block[i][j] = 0;
         }
     }
+    for (int j = 0; j < 14; j++) total_block[20][j] = 1;
 
-    for (j = 0; j < 14; j++)            // 화면의 제일 밑의 줄은 1로 채운다.
-        total_block[20][j] = 1;
-
-    // 전역변수 초기화
-    level = 0;
+    // 점수 및 상태 리셋 (레벨은 유지)
     lines = 0;
-    score = 0;        // 점수 초기화
-    hud_drawn = 0;    // HUD 다시 그리기 허용
-    ab_x = 5;
-    ab_y = 1;
-
-    stage_data[0].speed = 40;
-    stage_data[0].stick_rate = 20;
-    stage_data[0].clear_line = 1;
-    stage_data[1].speed = 38;
-    stage_data[1].stick_rate = 18;
-    stage_data[1].clear_line = 1;
-    stage_data[2].speed = 35;
-    stage_data[2].stick_rate = 18;
-    stage_data[2].clear_line = 20;
-    stage_data[3].speed = 30;
-    stage_data[3].stick_rate = 17;
-    stage_data[3].clear_line = 20;
-    stage_data[4].speed = 25;
-    stage_data[4].stick_rate = 16;
-    stage_data[4].clear_line = 20;
-    stage_data[5].speed = 20;
-    stage_data[5].stick_rate = 14;
-    stage_data[5].clear_line = 20;
-    stage_data[6].speed = 15;
-    stage_data[6].stick_rate = 14;
-    stage_data[6].clear_line = 20;
-    stage_data[7].speed = 10;
-    stage_data[7].stick_rate = 13;
-    stage_data[7].clear_line = 20;
-    stage_data[8].speed = 6;
-    stage_data[8].stick_rate = 12;
-    stage_data[8].clear_line = 20;
-    stage_data[9].speed = 4;
-    stage_data[9].stick_rate = 11;
-    stage_data[9].clear_line = 99999;
-    return 0;
+    score = 0;
+    hud_drawn = 0;
 }
 
-// block[row][col] 인덱싱 통일 + y<0 가드
-int show_cur_block(int shape, int angle, int x, int y)
-{
-    int r, c;
-
-    switch (shape)
-    {
-    case 0: SetColor(RED); break;
-    case 1: SetColor(BLUE); break;
-    case 2: SetColor(SKY_BLUE); break;
-    case 3: SetColor(WHITE); break;
-    case 4: SetColor(YELLOW); break;
-    case 5: SetColor(VOILET); break;
-    case 6: SetColor(GREEN); break;
+// 현재 블럭 그리기
+void Tetris::showCurrentBlock(int shape, int angle, int x, int y) {
+    int colorCode;
+    switch (shape) {
+    case 0: colorCode = RED; break;
+    case 1: colorCode = BLUE; break;
+    case 2: colorCode = SKY_BLUE; break;
+    case 3: colorCode = WHITE; break;
+    case 4: colorCode = YELLOW; break;
+    case 5: colorCode = VOILET; break;
+    case 6: colorCode = GREEN; break;
+    default: colorCode = WHITE; break;
     }
+    setColor(colorCode);
 
-    for (r = 0; r < 4; r++)
-    {
-        for (c = 0; c < 4; c++)
-        {
-            if (!block[shape][angle][r][c]) continue;
-            if (y + r < 0) continue; // 화면 위는 그리지 않음
-
+    for (int r = 0; r < 4; r++) {
+        for (int c = 0; c < 4; c++) {
+            if (block_model[shape][angle][r][c] == 0) continue;
+            if (y + r < 0) continue;
             gotoxy((c + x) * 2 + ab_x, y + r + ab_y);
             printf("■");
         }
     }
-    SetColor(BLACK);
+    setColor(BLACK);
     gotoxy(77, 23);
-    return 0;
 }
 
-int erase_cur_block(int shape, int angle, int x, int y)
-{
-    int r, c;
-    for (r = 0; r < 4; r++)
-    {
-        for (c = 0; c < 4; c++)
-        {
-            if (!block[shape][angle][r][c]) continue;
-            if (y + r < 0) continue; // 화면 위는 지우지 않음
-
+// 현재 블럭 지우기
+void Tetris::eraseCurrentBlock(int shape, int angle, int x, int y) {
+    for (int r = 0; r < 4; r++) {
+        for (int c = 0; c < 4; c++) {
+            if (block_model[shape][angle][r][c] == 0) continue;
+            if (y + r < 0) continue;
             gotoxy((c + x) * 2 + ab_x, y + r + ab_y);
             printf("  ");
         }
     }
-    return 0;
 }
 
-int show_total_block()
-{
-    int i, j;
-    SetColor(DARK_GRAY);
-    for (i = 0; i < 21; i++)
-    {
-        for (j = 0; j < 14; j++)
-        {
-            if (j == 0 || j == 13 || i == 20)        // 레벨에 따라 외벽 색이 변함
-                SetColor((level % 6) + 1);
+// 전체 맵 그리기
+void Tetris::showTotalBlock() {
+    setColor(DARK_GRAY);
+    for (int i = 0; i < 21; i++) {
+        for (int j = 0; j < 14; j++) {
+            if (j == 0 || j == 13 || i == 20)
+                setColor((level % 6) + 1);
             else
-                SetColor(DARK_GRAY);
+                setColor(DARK_GRAY);
 
             gotoxy((j * 2) + ab_x, i + ab_y);
-            if (total_block[i][j] == 1)
-                printf("■");
-            else
-                printf("  ");
+            if (total_block[i][j] == 1) printf("■");
+            else printf("  ");
         }
     }
-    SetColor(BLACK);
+    setColor(BLACK);
     gotoxy(77, 23);
-    return 0;
 }
 
-// UI를 호출하지 않도록 순수 생성만 수행
-int make_new_block()
-{
+// 다음 블럭 보여주기
+void Tetris::showNextBlock(int shape) {
+    setColor((level) % 6 + 1);
+    for (int i = 1; i < 7; i++) {
+        gotoxy(33, i);
+        for (int j = 0; j < 6; j++) {
+            if (i == 1 || i == 6 || j == 0 || j == 5) printf("■");
+            else printf("  ");
+        }
+    }
+    // 다음 블럭은 항상 0도 회전 상태로 미리보기
+    int temp_x = 15; // 미리보기 좌표 (임의 조정)
+    int temp_y = 1;
+
+    // showCurrentBlock을 재활용하되 좌표를 미리보기 창으로
+    // 원래 로직에서는 미리보기 좌표 계산이 포함되어 있었음
+    // 여기서는 간단히 구현
+    int colorCode;
+    switch (shape) {
+    case 0: colorCode = RED; break;
+    case 1: colorCode = BLUE; break;
+    case 2: colorCode = SKY_BLUE; break;
+    case 3: colorCode = WHITE; break;
+    case 4: colorCode = YELLOW; break;
+    case 5: colorCode = VOILET; break;
+    case 6: colorCode = GREEN; break;
+    }
+    setColor(colorCode);
+
+    // 미리보기 내부 그리기
+    for (int r = 0; r < 4; r++) {
+        for (int c = 0; c < 4; c++) {
+            if (block_model[shape][0][r][c]) {
+                gotoxy((c * 2) + 36, r + 2); // 좌표 하드코딩 (원본 로직 참조)
+                printf("■");
+            }
+        }
+    }
+    setColor(BLACK);
+}
+
+// 게임 상태 표시 (점수, 레벨)
+void Tetris::showGameStat() {
+    setColor(GRAY);
+    if (!hud_drawn) {
+        gotoxy(35, 7); printf("STAGE");
+        gotoxy(35, 9); printf("SCORE");
+        gotoxy(35, 12); printf("LINES");
+        hud_drawn = 1;
+    }
+    gotoxy(41, 7); printf("%d", level + 1);
+    gotoxy(35, 10); printf("%10d", score);
+    gotoxy(35, 13); printf("%10d", stage_data[level].clear_line - lines);
+}
+
+// 새 블럭 생성
+int Tetris::makeNewBlock() {
     int i = rand() % 100;
-    if (i <= stage_data[level].stick_rate) // 막대 확률
-        return 0;
-    return (rand() % 6) + 1; // 1~6
+    if (i <= stage_data[level].stick_rate) return 0; // 막대
+    return (rand() % 6) + 1;
 }
 
-// 인덱싱 통일 + 범위 가드
-int strike_check(int shape, int angle, int x, int y)
-{
-    int r, c;
-    for (r = 0; r < 4; r++)
-    {
-        for (c = 0; c < 4; c++)
-        {
-            if (!block[shape][angle][r][c]) continue;
-
+// 충돌 체크
+int Tetris::checkCollision(int shape, int angle, int x, int y) {
+    for (int r = 0; r < 4; r++) {
+        for (int c = 0; c < 4; c++) {
+            if (block_model[shape][angle][r][c] == 0) continue;
             int gy = y + r;
             int gx = x + c;
 
-            // 좌우 벽 충돌
-            if (gx <= 0 || gx >= 13) return 1;
-
-            // 윗부분은 통과
+            if (gx <= 0 || gx >= 13) return 1; // 벽
             if (gy < 0) continue;
-
-            // 바닥 넘음
-            if (gy >= 21) return 1;
-
-            // 기존 블럭과 충돌
-            if (total_block[gy][gx]) return 1;
+            if (gy >= 21) return 1; // 바닥
+            if (total_block[gy][gx]) return 1; // 다른 블럭
         }
     }
     return 0;
 }
 
-// 인덱싱 통일 + 범위 가드
-int merge_block(int shape, int angle, int x, int y)
-{
-    int r, c;
-    for (r = 0; r < 4; r++)
-    {
-        for (c = 0; c < 4; c++)
-        {
-            if (!block[shape][angle][r][c]) continue;
-            int gy = y + r, gx = x + c;
-            if (gy < 0 || gy > 20 || gx < 0 || gx > 13) continue;
-            total_block[gy][gx] = 1;
+// 블럭 고정
+void Tetris::mergeBlock(int shape, int angle, int x, int y) {
+    for (int r = 0; r < 4; r++) {
+        for (int c = 0; c < 4; c++) {
+            if (block_model[shape][angle][r][c]) {
+                int gy = y + r;
+                int gx = x + c;
+                if (gy >= 0 && gy <= 20 && gx >= 0 && gx <= 13)
+                    total_block[gy][gx] = 1;
+            }
         }
     }
-    check_full_line();
-    show_total_block();
-    return 0;
+    checkFullLine();
+    showTotalBlock();
 }
 
-int block_start(int shape, int* angle, int* x, int* y)
-{
-    *x = 5;
-    *y = -3;
-    *angle = 0;
-    return 0;
-}
-
-int show_gameover()
-{
-    SetColor(RED);
-    gotoxy(15, 8);
-    printf("┏━━━━━━━━━━━━━━━━━━━━━━━━━━┓");
-    gotoxy(15, 9);
-    printf("┃**************************┃");
-    gotoxy(15, 10);
-    printf("┃*        GAME OVER       *┃");
-    gotoxy(15, 11);
-    printf("┃**************************┃");
-    gotoxy(15, 12);
-    printf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
-    Sleep(1000);
-
-    (void)_getch();
-    system("cls");
-
-    return 0;
-}
-
-int move_block(int* shape, int* angle, int* x, int* y, int* next_shape)
-{
-    erase_cur_block(*shape, *angle, *x, *y);
-
-    (*y)++;    // 블럭을 한칸 아래로 내림
-    if (strike_check(*shape, *angle, *x, *y) == 1)
-    {
-        if (*y < 0)    // 게임오버
-            return 1;
-
-        (*y)--;
-        merge_block(*shape, *angle, *x, *y);
-        *shape = *next_shape;
-        *next_shape = make_new_block();
-
-        block_start(*shape, angle, x, y);    // angle,x,y는 포인터
-        show_next_block(*next_shape);
-        return 2; // 착지
-    }
-    return 0; // 계속 진행
-}
-
-int rotate_block(int shape, int* angle, int* x, int* y)
-{
-    return 0;
-}
-
-int check_full_line()
-{
-    int i, j, k;
-    for (i = 0; i < 20; i++)
-    {
-        for (j = 1; j < 13; j++)
-        {
-            if (total_block[i][j] == 0)
-                break;
+// 줄 삭제 체크
+void Tetris::checkFullLine() {
+    for (int i = 0; i < 20; i++) {
+        int j;
+        for (j = 1; j < 13; j++) {
+            if (total_block[i][j] == 0) break;
         }
-        if (j == 13)    // 한 줄이 다 채워졌음
-        {
+        if (j == 13) { // 한 줄 완성
             lines++;
-            show_total_block();
-            SetColor(BLUE);
+            // 라인 클리어 애니메이션
+            setColor(BLUE);
             gotoxy(1 * 2 + ab_x, i + ab_y);
-            for (j = 1; j < 13; j++)
-            {
-                printf("□");
-                Sleep(10);
-            }
-            gotoxy(1 * 2 + ab_x, i + ab_y);
-            for (j = 1; j < 13; j++)
-            {
-                printf("  ");
-                Sleep(10);
-            }
+            for (int k = 1; k < 13; k++) { printf("□"); Sleep(10); }
 
-            for (k = i; k > 0; k--)
-            {
-                for (j = 1; j < 13; j++)
-                    total_block[k][j] = total_block[k - 1][j];
+            // 라인 삭제 및 내리기
+            for (int k = i; k > 0; k--) {
+                for (int col = 1; col < 13; col++)
+                    total_block[k][col] = total_block[k - 1][col];
             }
-            for (j = 1; j < 13; j++)
-                total_block[0][j] = 0;
+            for (int col = 1; col < 13; col++) total_block[0][col] = 0;
 
             score += 100 + (level * 10) + (rand() % 10);
-            show_gamestat();
+            showGameStat();
         }
     }
-    return 0;
 }
 
-int show_next_block(int shape)
-{
-    int i, j;
-    SetColor((level) % 6 + 1);
-    for (i = 1; i < 7; i++)
-    {
-        gotoxy(33, i);
-        for (j = 0; j < 6; j++)
-        {
-            if (i == 1 || i == 6 || j == 0 || j == 5)
-                printf("■");
-            else
-                printf("  ");
-        }
-    }
-    show_cur_block(shape, 0, 15, 1); // 사이드 패널에 표시
-    return 0;
+// 게임 오버 처리
+void Tetris::showGameOver() {
+    setColor(RED);
+    gotoxy(15, 8);  printf("┏━━━━━━━━━━━━━━━━━━━━━━━━━━┓");
+    gotoxy(15, 9);  printf("┃                          ┃");
+    gotoxy(15, 10); printf("┃        GAME OVER         ┃");
+    gotoxy(15, 11); printf("┃                          ┃");
+    gotoxy(15, 12); printf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
+    Sleep(1000);
+    _getch();
+    system("cls");
 }
 
-int show_gamestat()
-{
-    SetColor(GRAY);
-    if (!hud_drawn)
-    {
-        gotoxy(35, 7);
-        printf("STAGE");
+// 로고 화면
+void Tetris::showLogo() {
+    gotoxy(13, 3); printf("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓");
+    Sleep(50); gotoxy(13, 4); printf("┃◆◆◆  ◆◆◆  ◆◆◆   ◆◆     ◆   ◆◆◆  ┃");
+    Sleep(50); gotoxy(13, 5); printf("┃ ◆    ◆     ◆    ◆ ◆    ◆   ◆    ┃");
+    Sleep(50); gotoxy(13, 6); printf("┃ ◆    ◆◆◆   ◆    ◆◆     ◆     ◆  ┃");
+    Sleep(50); gotoxy(13, 7); printf("┃ ◆    ◆     ◆    ◆ ◆    ◆     ◆  ┃");
+    Sleep(50); gotoxy(13, 8); printf("┃ ◆    ◆◆◆   ◆    ◆  ◆   ◆    ◆◆◆  ┃");
+    Sleep(50); gotoxy(13, 9); printf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
 
-        gotoxy(35, 9);
-        printf("SCORE");
-
-        gotoxy(35, 12);
-        printf("LINES");
-
-        hud_drawn = 1; // 한 번만 출력
-    }
-    gotoxy(41, 7);
-    printf("%d", level + 1);
-    gotoxy(35, 10);
-    printf("%10d", score);
-    gotoxy(35, 13);
-    printf("%10d", stage_data[level].clear_line - lines);
-    return 0;
+    gotoxy(28, 20); printf("Press Any Key to Start!");
+    _getch();
+    system("cls");
 }
 
-// 안전 입력: 숫자만 허용 (비숫자 입력 시 커서 발작 방지)
-int input_data()
-{
-    SetColor(GRAY);
+// 시작 레벨 입력
+void Tetris::inputStartLevel() {
+    setColor(GRAY);
     gotoxy(10, 7);  printf("┏━━━━━━━━━━<GAME KEY>━━━━━━━━┓");
-    Sleep(10);      gotoxy(10, 8);  printf("┃ UP   : Rotate Block        ┃");
-    Sleep(10);      gotoxy(10, 9);  printf("┃ DOWN : Move One-Step Down  ┃");
-    Sleep(10);      gotoxy(10, 10); printf("┃ SPACE: Move Bottom Down    ┃");
-    Sleep(10);      gotoxy(10, 11); printf("┃ LEFT : Move Left           ┃");
-    Sleep(10);      gotoxy(10, 12); printf("┃ RIGHT: Move Right          ┃");
-    Sleep(10);      gotoxy(10, 13); printf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
+    gotoxy(10, 8);  printf("┃ UP   : Rotate Block        ┃");
+    gotoxy(10, 9);  printf("┃ DOWN : Move One-Step Down  ┃");
+    gotoxy(10, 10); printf("┃ SPACE: Hard Drop           ┃");
+    gotoxy(10, 11); printf("┃ LEFT : Move Left           ┃");
+    gotoxy(10, 12); printf("┃ RIGHT: Move Right          ┃");
+    gotoxy(10, 13); printf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
 
-    char buf[64];
-    long sel = 0;
     while (1) {
         gotoxy(10, 3);
         printf("Select Start level[1-8]:          ");
         gotoxy(35, 3);
 
-        if (!fgets(buf, sizeof(buf), stdin)) {
-            clearerr(stdin);
-            continue;
+        char buf[10];
+        cin.getline(buf, 10);
+        int sel = atoi(buf);
+
+        if (sel >= 1 && sel <= 8) {
+            level = sel - 1;
+            break;
         }
-
-        char* endp = NULL;
-        sel = strtol(buf, &endp, 10);
-
-        while (*endp == ' ' || *endp == '\t' || *endp == '\r' || *endp == '\n') endp++;
-
-        if (*endp == '\0' && sel >= 1 && sel <= 8) break;
-
-        gotoxy(10, 5);
-        printf("Please enter a number between 1 and 8.      ");
-        Sleep(600);
-        gotoxy(10, 5);
-        printf("                                            ");
     }
-
-    level = (int)sel - 1;
     system("cls");
-    return 0;
 }
 
-int show_logo()
-{
-    int i, j;
-    gotoxy(13, 3);
-    printf("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓");
-    Sleep(100);
-    gotoxy(13, 4);
-    printf("┃◆◆◆  ◆◆◆  ◆◆◆   ◆◆     ◆   ◆◆◆  ┃");
-    Sleep(100);
-    gotoxy(13, 5);
-    printf("┃ ◆   ◆     ◆    ◆ ◆    ◆   ◆    ┃");
-    Sleep(100);
-    gotoxy(13, 6);
-    printf("┃ ◆   ◆◆◆   ◆    ◆◆     ◆     ◆  ┃");
-    Sleep(100);
-    gotoxy(13, 7);
-    printf("┃ ◆   ◆     ◆    ◆ ◆    ◆     ◆  ┃");
-    Sleep(100);
-    gotoxy(13, 8);
-    printf("┃ ◆   ◆◆◆   ◆    ◆  ◆   ◆   ◆◆◆  ┃");
-    Sleep(100);
-    gotoxy(13, 9);
-    printf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
+// 블럭 자동 낙하 (타이머에 의한 호출)
+int Tetris::dropBlock() {
+    return processBlockMove(KEY_DOWN);
+}
 
-    gotoxy(28, 20);
-    printf("Please Press Any Key~!");
+// 키 입력 및 이동 처리
+// 리턴값: 0=정상, 1=게임오버, 2=착지 후 새블럭 필요
+int Tetris::processBlockMove(int key) {
+    // 1. 현재 블럭 지우기
+    eraseCurrentBlock(block_shape, block_angle, block_x, block_y);
 
-    for (i = 0;; i++) {
-        if (i % 40 == 0)
-        {
-            for (j = 0; j < 5; j++)
-            {
-                gotoxy(17, 14 + j);
-                printf("                                                          ");
-            }
-            show_cur_block(rand() % 7, rand() % 4, 6, 14);
-            show_cur_block(rand() % 7, rand() % 4, 12, 14);
-            show_cur_block(rand() % 7, rand() % 4, 19, 14);
-            show_cur_block(rand() % 7, rand() % 4, 24, 14);
+    int ret = 0; // 상태 코드
+
+    switch (key) {
+    case KEY_UP: // 회전
+        if (!checkCollision(block_shape, (block_angle + 1) % 4, block_x, block_y))
+            block_angle = (block_angle + 1) % 4;
+        break;
+    case KEY_LEFT:
+        if (!checkCollision(block_shape, block_angle, block_x - 1, block_y))
+            block_x--;
+        break;
+    case KEY_RIGHT:
+        if (!checkCollision(block_shape, block_angle, block_x + 1, block_y))
+            block_x++;
+        break;
+    case KEY_DOWN:
+        if (!checkCollision(block_shape, block_angle, block_x, block_y + 1)) {
+            block_y++;
         }
-        if (_kbhit())
-            break;
-        Sleep(30);
+        else {
+            // 바닥에 닿음
+            // 지웠던 자리에 다시 그리기엔 늦었으므로(좌표가 변하지 않음)
+            // 바로 병합 프로세스로 넘어감
+            // 다만 erase를 맨 위에서 했으므로, 충돌 직전 위치(현재위치)에 다시 그려주는 게 안전하지만
+            // mergeBlock이 현재 x,y 기준으로 total_block에 1을 찍으므로 괜찮음.
+
+            // 만약 y가 음수라면 게임오버
+            if (block_y < 0) ret = 1;
+            else ret = 2; // 착지
+        }
+        break;
+    case KEY_SPACE: // 하드 드롭
+        while (!checkCollision(block_shape, block_angle, block_x, block_y + 1)) {
+            block_y++;
+        }
+        if (block_y < 0) ret = 1;
+        else ret = 2;
+        break;
     }
 
-    (void)_getch();
-    system("cls");
+    // 착지(2)나 게임오버(1)가 아니면 다시 그림
+    if (ret == 0) {
+        showCurrentBlock(block_shape, block_angle, block_x, block_y);
+    }
+    else if (ret == 2) {
+        // 착지 처리
+        // erase된 상태이므로 다시 그려줄 필요 없이 바로 merge해도 되지만, 
+        // 시각적으로 마지막 위치를 보여주고 병합
+        showCurrentBlock(block_shape, block_angle, block_x, block_y);
+        mergeBlock(block_shape, block_angle, block_x, block_y);
+    }
 
-    return 0;
+    return ret;
+}
+
+// 메인 게임 루프
+void Tetris::run() {
+    showLogo();
+
+    while (true) {
+        // 1. 게임 시작 전 초기화 및 입력
+        inputStartLevel();
+        initGame();
+        showTotalBlock();
+        showGameStat();
+
+        // 2. 첫 블럭 생성
+        block_shape = makeNewBlock();
+        next_block_shape = makeNewBlock();
+
+        block_x = 5;
+        block_y = -3; // 위에서 시작
+        block_angle = 0;
+
+        showNextBlock(next_block_shape);
+
+        // 3. 게임 플레이 루프 (한 판)
+        bool isGameOver = false;
+
+        while (!isGameOver) {
+            // 키 입력 처리 및 타이머 루프
+            for (int i = 0; i < stage_data[level].speed; i++) {
+                if (_kbhit()) {
+                    int key = _getch();
+                    if (key == 0 || key == 0xE0) {
+                        key = _getch();
+                        int result = processBlockMove(key);
+                        if (result == 1) { isGameOver = true; break; }
+                        if (result == 2) {
+                            // 착지했으므로 새 블럭 생성 후 루프 탈출(타이머 리셋 효과)
+                            goto NEW_BLOCK;
+                        }
+                    }
+                    else if (key == KEY_SPACE) {
+                        int result = processBlockMove(KEY_SPACE);
+                        if (result == 1) { isGameOver = true; break; }
+                        if (result == 2) goto NEW_BLOCK;
+                    }
+                }
+                Sleep(20); // 프레임 딜레이
+            }
+
+            // 시간 경과로 인한 자동 낙하:
+            // C2362 오류 방지를 위해 블록({ })으로 감싸 변수 result의 범위를 제한함
+            {
+                int result = dropBlock();
+                if (result == 1) isGameOver = true;
+                else if (result == 2) goto NEW_BLOCK;
+            }
+
+            continue;
+
+        NEW_BLOCK:
+            // 스테이지 클리어 체크
+            if (lines >= stage_data[level].clear_line) {
+                level++;
+                lines = 0;
+                initGame(); // 보드 초기화 및 다음 레벨 시작
+                showTotalBlock();
+                showGameStat();
+            }
+
+            // 새 블럭 교체
+            block_shape = next_block_shape;
+            next_block_shape = makeNewBlock();
+            showNextBlock(next_block_shape);
+
+            // 위치 리셋
+            block_x = 5;
+            block_y = -1; // 생성 위치 조정
+            block_angle = 0;
+
+            // 생성되자마자 죽는지 체크
+            if (checkCollision(block_shape, block_angle, block_x, block_y)) {
+                isGameOver = true;
+            }
+        }
+
+        // 게임 오버 처리
+        showGameOver();
+        // while(true)에 의해 다시 레벨 입력으로 돌아감
+    }
 }
