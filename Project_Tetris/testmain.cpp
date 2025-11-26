@@ -6,6 +6,7 @@ int main() {
 
     // 게임 실행
     game.run();
+    // 김도현
 
     return 0;
 }
