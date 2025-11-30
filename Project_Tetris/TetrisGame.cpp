@@ -59,11 +59,8 @@ void TetrisGame::run() {
 
         // 1인용 게임이므로 (4, 2) 위치에 생성
         TetrisCore game(4, 2, isWaterMode);
-        game.initGame();
+        game.initGame(startLevel);
 
-        // [중요] TetrisCore에 setLevel 함수가 있어야 이 코드가 작동합니다.
-        // TetrisCore.h의 public 부분에 'void setLevel(int l) { level = l; }'를 추가하세요.
-        game.setLevel(startLevel);
 
         // 게임 루프
         while (!game.isGameOver()) {
@@ -89,7 +86,7 @@ void TetrisGame::run() {
             // 게임 상태 업데이트 (블록 낙하 등)
             game.updateLogic();
 
-            Sleep(20); // 게임 속도 조절
+            Sleep(10); // 게임 속도 조절
         }
 
         // 게임 오버 처리

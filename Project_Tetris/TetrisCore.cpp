@@ -20,9 +20,12 @@ TetrisCore::TetrisCore(int x, int y, bool waterMode) {
     stage_data[9] = { 4, 11, 99999, 80 };
 }
 
-void TetrisCore::initGame() {
+void TetrisCore::initGame(int startLevel) {
     board.initBoard();
-    level = 0;
+
+    // [변경] 무조건 0이 아니라, 전달받은 레벨로 설정
+    level = startLevel;
+
     lines = 0;
     score = 0;
     water_tick_count = 0;
@@ -37,7 +40,7 @@ void TetrisCore::initGame() {
     block_y = -3;
     block_angle = 0;
 
-    draw(); // 초기 화면 그리기
+    draw(); // 여기서 바뀐 레벨 색상으로 벽을 그립니다.
 }
 
 int TetrisCore::makeNewBlock() {
@@ -89,18 +92,39 @@ bool TetrisCore::handleInput(int key) {
     bool acted = false;
     switch (key) {
     case KEY_UP:
+        // 1. 제자리 회전 시도
         if (strikeCheck(block_shape, (block_angle + 1) % 4, block_x, block_y) == 0) {
             eraseCurBlock(block_shape, block_angle, block_x, block_y);
             block_angle = (block_angle + 1) % 4;
             acted = true;
         }
+        // 2. 왼쪽으로 1칸 밀어서 회전 시도
         else if (strikeCheck(block_shape, (block_angle + 1) % 4, block_x - 1, block_y) == 0) {
             eraseCurBlock(block_shape, block_angle, block_x, block_y);
-            block_angle = (block_angle + 1) % 4; block_x--; acted = true;
+            block_angle = (block_angle + 1) % 4;
+            block_x--;
+            acted = true;
         }
+        // 3. 오른쪽으로 1칸 밀어서 회전 시도
         else if (strikeCheck(block_shape, (block_angle + 1) % 4, block_x + 1, block_y) == 0) {
             eraseCurBlock(block_shape, block_angle, block_x, block_y);
-            block_angle = (block_angle + 1) % 4; block_x++; acted = true;
+            block_angle = (block_angle + 1) % 4;
+            block_x++;
+            acted = true;
+        }
+        // 4. [복구] 왼쪽으로 2칸 밀어서 회전 시도 (긴 막대 블록용)
+        else if (strikeCheck(block_shape, (block_angle + 1) % 4, block_x - 2, block_y) == 0) {
+            eraseCurBlock(block_shape, block_angle, block_x, block_y);
+            block_angle = (block_angle + 1) % 4;
+            block_x -= 2;
+            acted = true;
+        }
+        // 5. [복구] 오른쪽으로 2칸 밀어서 회전 시도 (긴 막대 블록용)
+        else if (strikeCheck(block_shape, (block_angle + 1) % 4, block_x + 2, block_y) == 0) {
+            eraseCurBlock(block_shape, block_angle, block_x, block_y);
+            block_angle = (block_angle + 1) % 4;
+            block_x += 2;
+            acted = true;
         }
         break;
     case KEY_LEFT:
@@ -164,16 +188,28 @@ void TetrisCore::checkFullLine() {
 // 나머지 함수들(moveBlock, strikeCheck 등)은 기존 TetrisGame.cpp와 동일하게 복사하되,
 // 클래스명만 TetrisCore로 변경. 
 // drawUIFrame 등 위치 좌표는 ab_x, ab_y를 기준으로 상대 좌표로 수정 필요.
-
 void TetrisCore::showGameStat() {
     // UI 위치를 보드 옆으로 상대적으로 배치
     int uiX = ab_x + 30;
     int uiY = ab_y + 2;
 
     ConsoleHelper::setColor(WHITE);
+
+    // 1. 다음 블록 라벨
     ConsoleHelper::setCursorPosition(uiX, uiY);      printf("NEXT");
+
+    // 2. 레벨 표시
     ConsoleHelper::setCursorPosition(uiX, uiY + 5);  printf("LV: %d", level + 1);
+
+    // 3. 점수 표시
     ConsoleHelper::setCursorPosition(uiX, uiY + 7);  printf("SC: %d", score);
+
+    // 4. [추가됨] 남은 줄 수 (GOAL) 표시
+    // 현재 레벨 목표치 - 지금까지 지운 줄 수
+    int remainLines = stage_data[level].clear_line - lines;
+    if (remainLines < 0) remainLines = 0;
+
+    ConsoleHelper::setCursorPosition(uiX, uiY + 9);  printf("GOAL: %d ", remainLines);
 }
 
 void TetrisCore::showNextBlock(int shape) {
