@@ -24,19 +24,9 @@ void TetrisBoard::initBoard() {
 }
 
 void TetrisBoard::drawBoard(int level) {
-    // 상단 벽 (기존 유지, 필요 시 여기도 루프 안에서 좌표 지정 방식으로 변경 가능)
-    /*ConsoleHelper::setColor(DARK_GRAY);
-    ConsoleHelper::setCursorPosition(ab_x, ab_y - 1);
-    for (int i = 0; i < 14; i++) printf("■");*/
-
-    // [수정된 부분] 보드 내부 그리기
     for (int i = 0; i < 21; i++) {
-        // 기존: 줄 시작할 때 한 번만 커서 이동
-        // ConsoleHelper::setCursorPosition(ab_x, ab_y + i); 
-
         for (int j = 0; j < 14; j++) {
-            // 변경: 모든 칸을 그릴 때마다 명확한 좌표를 찍어줍니다.
-            // 이렇게 하면 떨어지는 블록(showCurBlock)과 좌표 계산식이 완전히 동일해져서 밀림이 사라집니다.
+            // 좌표를 명확하게 지정하여 밀림 방지
             ConsoleHelper::setCursorPosition(ab_x + (j * 2), ab_y + i);
 
             int blockVal = total_block[i][j];
@@ -62,12 +52,6 @@ void TetrisBoard::drawBoard(int level) {
             }
         }
     }
-
-    // 하단 벽 (기존 유지)
-    /*ConsoleHelper::setCursorPosition(ab_x, ab_y + 21);
-    ConsoleHelper::setColor(DARK_GRAY);
-    for (int i = 0; i < 14; i++) printf("■");*/
-
     ConsoleHelper::setColor(BLACK);
 }
 
@@ -91,7 +75,7 @@ void TetrisBoard::raiseWaterLevel() {
             printf("■");
         }
         else if (total_block[targetRow][j] == 1) {
-            ConsoleHelper::setColor(WATER_COLOR); // 물 속 블럭
+            ConsoleHelper::setColor(WATER_COLOR);
             printf("■");
         }
     }
@@ -133,6 +117,7 @@ void TetrisBoard::setBlock(int y, int x, int val) {
         total_block[y][x] = val;
 }
 
+// [핵심 수정] 이펙트 잔상 제거 로직 추가
 int TetrisBoard::deleteFullLines(int ab_x, int ab_y) {
     int linesCleared = 0;
     int checkLimit = 20 - waterHeight;
@@ -146,14 +131,24 @@ int TetrisBoard::deleteFullLines(int ab_x, int ab_y) {
 
         if (j == 13) {
             linesCleared++;
+
+            // 1. 라인 삭제 이펙트 (파란색 ==)
             ConsoleHelper::setColor(SKY_BLUE);
             ConsoleHelper::setCursorPosition(1 * 2 + ab_x, i + ab_y);
             for (int k = 1; k < 13; k++) { printf("=="); Sleep(10); }
 
+            // 2. [추가] 이펙트를 즉시 지움 (검은색 공백)
+            // 이렇게 해야 데이터가 내려오기 전에 화면이 깨끗해져서 잔상이 남지 않습니다.
+            ConsoleHelper::setColor(BLACK);
+            ConsoleHelper::setCursorPosition(1 * 2 + ab_x, i + ab_y);
+            for (int k = 1; k < 13; k++) { printf("  "); }
+
+            // 3. 데이터 이동 (윗 줄을 아래로 내림)
             for (int k = i; k > 0; k--) {
                 for (int col = 1; col < 13; col++)
                     total_block[k][col] = total_block[k - 1][col];
             }
+            // 최상단 줄은 비움
             for (int col = 1; col < 13; col++) total_block[0][col] = EMPTY_BLOCK;
         }
     }
