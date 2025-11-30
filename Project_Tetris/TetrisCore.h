@@ -28,7 +28,7 @@ protected:
     bool is_gameover;
 
 public:
-    TetrisCore(int x, int y, bool waterMode);
+    TetrisCore(int x, int y, bool waterMode, bool isBattle = false);
 
     void setLevel(int l) { level = l; }
 

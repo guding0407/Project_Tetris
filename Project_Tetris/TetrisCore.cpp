@@ -1,7 +1,8 @@
 #include "TetrisCore.h"
 #include "ConsoleHelper.h"
 
-TetrisCore::TetrisCore(int x, int y, bool waterMode) {
+TetrisCore::TetrisCore(int x, int y, bool waterMode, bool isBattle) {
+    
     ab_x = x;
     ab_y = y;
     isWaterMode = waterMode;
@@ -176,12 +177,24 @@ void TetrisCore::checkFullLine() {
     if (cleared > 0) {
         lines += cleared;
         score += 100 + (level * 10);
-        clearedLineCount += cleared; // 공격용 카운트
+        clearedLineCount += cleared; // 2인용 공격 카운트
 
+        // 해수면 모드라면 물 수위 낮추기
         if (isWaterMode) {
             for (int k = 0; k < cleared; k++) board.lowerWaterLevel();
         }
-        draw();
+
+        // [복구됨] 레벨업 로직
+        // 현재 지운 줄(lines)이 목표치(clear_line) 이상이면 레벨업
+        if (lines >= stage_data[level].clear_line) {
+            lines = 0;   // 줄 카운트 초기화 (다음 레벨을 위해)
+            level++;     // 레벨 상승
+
+            // 최대 레벨(9)을 넘지 않도록 안전장치
+            if (level > 9) level = 9;
+        }
+
+        draw(); // 화면 갱신 (레벨, 목표, 점수 등)
     }
 }
 
