@@ -32,7 +32,7 @@ public:
 
     void setLevel(int l) { level = l; }
 
-    void initGame();
+    void initGame(int startLevel = 0);
     void draw(); // 전체 그리기
     void updateLogic(); // 게임 로직 진행 (자동 낙하 등)
     bool handleInput(int key); // 키 입력 처리 (성공시 true)
