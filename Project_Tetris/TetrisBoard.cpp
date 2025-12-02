@@ -13,46 +13,49 @@ void TetrisBoard::setBasePosition(int x, int y) {
 }
 
 void TetrisBoard::initBoard() {
+    // 내부 공간 초기화
     for (int i = 0; i < 20; i++) {
         for (int j = 0; j < 14; j++) {
             if (j == 0 || j == 13) total_block[i][j] = WALL_BLOCK;
             else total_block[i][j] = EMPTY_BLOCK;
         }
     }
+    // [중요] 바닥 벽 설정 (이게 없으면 뚫림)
     for (int j = 0; j < 14; j++) total_block[20][j] = WALL_BLOCK;
     waterHeight = 0;
 }
 
 void TetrisBoard::drawBoard(int level) {
+    // 상단 벽
+    for (int i = 0; i < 14; i++) {
+        ConsoleHelper::write(ab_x + (i * 2), ab_y - 1, "■", DARK_GRAY);
+    }
+
+    // 보드 내부
     for (int i = 0; i < 21; i++) {
         for (int j = 0; j < 14; j++) {
-            // 좌표를 명확하게 지정하여 밀림 방지
-            ConsoleHelper::setCursorPosition(ab_x + (j * 2), ab_y + i);
-
             int blockVal = total_block[i][j];
+            int color = BLACK;
+            std::string shape = "  ";
 
             if (blockVal == WALL_BLOCK) {
-                if (j == 0 || j == 13 || i == 20)
-                    ConsoleHelper::setColor((level % 6) + 1);
-                else
-                    ConsoleHelper::setColor(DARK_GRAY);
-                printf("■");
+                if (j == 0 || j == 13 || i == 20) color = (level % 6) + 1;
+                else color = DARK_GRAY;
+                shape = "■";
             }
             else if (blockVal == WATER_BLOCK) {
-                ConsoleHelper::setColor(WATER_COLOR);
-                printf("■");
+                color = WATER_COLOR;
+                shape = "■";
             }
             else if (blockVal == 1) { // 굳은 블록
-                ConsoleHelper::setColor(GRAY);
-                printf("■");
+                color = GRAY;
+                shape = "■";
             }
-            else {
-                ConsoleHelper::setColor(BLACK);
-                printf("  ");
-            }
+            // 그 외에는 "  " (공백)
+
+            ConsoleHelper::write(ab_x + (j * 2), ab_y + i, shape, color);
         }
     }
-    ConsoleHelper::setColor(BLACK);
 }
 
 void TetrisBoard::raiseWaterLevel() {
@@ -60,26 +63,12 @@ void TetrisBoard::raiseWaterLevel() {
     waterHeight++;
 
     int targetRow = 20 - waterHeight;
-
     for (int j = 1; j < 13; j++) {
         if (total_block[targetRow][j] == EMPTY_BLOCK) {
             total_block[targetRow][j] = WATER_BLOCK;
         }
     }
-
-    for (int j = 1; j < 13; j++) {
-        ConsoleHelper::setCursorPosition((j * 2) + ab_x, targetRow + ab_y);
-
-        if (total_block[targetRow][j] == WATER_BLOCK) {
-            ConsoleHelper::setColor(WATER_COLOR);
-            printf("■");
-        }
-        else if (total_block[targetRow][j] == 1) {
-            ConsoleHelper::setColor(WATER_COLOR);
-            printf("■");
-        }
-    }
-    ConsoleHelper::setColor(BLACK);
+    // 그리기 업데이트는 drawBoard에서 수행됨
 }
 
 void TetrisBoard::lowerWaterLevel() {
@@ -91,20 +80,7 @@ void TetrisBoard::lowerWaterLevel() {
             total_block[targetRow][j] = EMPTY_BLOCK;
         }
     }
-
-    for (int j = 1; j < 13; j++) {
-        ConsoleHelper::setCursorPosition((j * 2) + ab_x, targetRow + ab_y);
-        if (total_block[targetRow][j] == 1) {
-            ConsoleHelper::setColor(GRAY);
-            printf("■");
-        }
-        else {
-            ConsoleHelper::setColor(BLACK);
-            printf("  ");
-        }
-    }
     waterHeight--;
-    ConsoleHelper::setColor(BLACK);
 }
 
 int TetrisBoard::getBlock(int y, int x) const {
@@ -117,38 +93,43 @@ void TetrisBoard::setBlock(int y, int x, int val) {
         total_block[y][x] = val;
 }
 
-// [핵심 수정] 이펙트 잔상 제거 로직 추가
+// [핵심 수정] 라인 삭제 시 바닥(row 20)을 절대 건드리지 않도록 수정
 int TetrisBoard::deleteFullLines(int ab_x, int ab_y) {
     int linesCleared = 0;
+
+    // 바닥 바로 윗줄(19)까지만 검사해야 함. 
+    // waterHeight가 0이어도 20번 줄(바닥)은 검사하면 안 됨!
     int checkLimit = 20 - waterHeight;
 
     for (int i = 0; i < checkLimit; i++) {
+        // 바닥(20)은 검사하지 않음
+        if (i >= 20) continue;
+
         int j;
         for (j = 1; j < 13; j++) {
             if (total_block[i][j] == EMPTY_BLOCK) break;
             if (total_block[i][j] == WATER_BLOCK) break;
         }
 
-        if (j == 13) {
+        if (j == 13) { // 한 줄이 꽉 참
             linesCleared++;
 
-            // 1. 라인 삭제 이펙트 (파란색 ==)
-            ConsoleHelper::setColor(SKY_BLUE);
-            ConsoleHelper::setCursorPosition(1 * 2 + ab_x, i + ab_y);
-            for (int k = 1; k < 13; k++) { printf("=="); Sleep(10); }
+            // 1. 애니메이션
+            for (int k = 1; k < 13; k++) {
+                ConsoleHelper::write((k * 2) + ab_x, i + ab_y, "==", SKY_BLUE);
+                ConsoleHelper::render();
+                Sleep(10);
+            }
+            // 2. 이펙트 제거
+            for (int k = 1; k < 13; k++) {
+                ConsoleHelper::write((k * 2) + ab_x, i + ab_y, "  ", BLACK);
+            }
 
-            // 2. [추가] 이펙트를 즉시 지움 (검은색 공백)
-            // 이렇게 해야 데이터가 내려오기 전에 화면이 깨끗해져서 잔상이 남지 않습니다.
-            ConsoleHelper::setColor(BLACK);
-            ConsoleHelper::setCursorPosition(1 * 2 + ab_x, i + ab_y);
-            for (int k = 1; k < 13; k++) { printf("  "); }
-
-            // 3. 데이터 이동 (윗 줄을 아래로 내림)
+            // 3. 윗줄 내리기
             for (int k = i; k > 0; k--) {
                 for (int col = 1; col < 13; col++)
                     total_block[k][col] = total_block[k - 1][col];
             }
-            // 최상단 줄은 비움
             for (int col = 1; col < 13; col++) total_block[0][col] = EMPTY_BLOCK;
         }
     }

@@ -11,19 +11,30 @@ TetrisGame::TetrisGame(bool waterMode) {
 }
 
 void TetrisGame::showLogo() {
+    // 1. 화면 지우기 (새 창 느낌)
+    system("cls");
+    ConsoleHelper::setCursorVisible(false);
+
     ConsoleHelper::setColor(SKY_BLUE);
     printf("\n\n");
     printf("        ECO - TETRIS        \n");
-    if (isWaterMode) printf("  STOP THE RISING SEA LEVEL \n");
-    else            printf("     CLASSIC SINGLE MODE    \n");
+
+    if (isWaterMode) printf("  SINGLE PLAYER (SEA LEVEL) \n");
+    else            printf("   SINGLE PLAYER (CLASSIC)  \n");
+
     printf("\n");
     ConsoleHelper::setColor(WHITE);
     printf("  [ Press Any Key to Start ]\n");
+
+    // 키 입력 대기
+    while (_kbhit()) _getch();
     _getch();
+
     system("cls");
 }
 
 void TetrisGame::inputData() {
+    // 이 함수는 printf를 써도 무방 (게임 루프 밖이라서)
     ConsoleHelper::setColor(GRAY);
     int x = 10, y = 7;
     ConsoleHelper::setCursorPosition(x, y++); printf("┏━━━━━━━━━━<GAME KEY>━━━━━━━━┓");
@@ -52,23 +63,31 @@ void TetrisGame::inputData() {
 }
 
 void TetrisGame::run() {
+    // 1. 로고 보여주기
     showLogo();
 
     while (1) {
-        inputData(); // 레벨 입력 받기
+        // 2. 레벨 입력 받기
+        inputData();
 
-        // 1인용 게임이므로 (4, 2) 위치에 생성
-        TetrisCore game(4, 2, isWaterMode);
+        // 3. 더블 버퍼링 초기화
+        ConsoleHelper::init();
+
+        // 4. 싱글 플레이어 게임 객체 생성
+        // (x좌표=4, y좌표=2, 해수면모드, 전투모드=false)
+        TetrisCore game(4, 2, isWaterMode, false);
         game.initGame(startLevel);
 
-
-        // 게임 루프
+        // 5. 게임 루프
         while (!game.isGameOver()) {
+            // [Step 1] 버퍼 비우기
+            ConsoleHelper::clearBuffer();
+
+            // [Step 2] 키 입력 처리 (기존 싱글모드 방식 유지)
             if (_kbhit()) {
                 int key = _getch();
                 if (key == 0 || key == 0xE0) {
                     key = _getch();
-                    // 방향키 처리는 TetrisCore에게 위임
                     if (key == KEY_UP) game.handleInput(KEY_UP);
                     else if (key == KEY_DOWN) game.handleInput(KEY_DOWN);
                     else if (key == KEY_LEFT) game.handleInput(KEY_LEFT);
@@ -78,22 +97,25 @@ void TetrisGame::run() {
                     game.handleInput(KEY_SPACE);
                 }
                 else if (key == KEY_ESC) {
-                    // ESC 누르면 게임 종료
-                    return;
+                    return; // ESC 누르면 종료
                 }
             }
 
-            // 게임 상태 업데이트 (블록 낙하 등)
+            // [Step 3] 로직 업데이트 및 그리기(Write)
             game.updateLogic();
+            game.draw(); // 메모리에 그리기
 
-            Sleep(10); // 게임 속도 조절
+            // [Step 4] 최종 렌더링
+            ConsoleHelper::render();
+
+            Sleep(20);
         }
 
-        // 게임 오버 처리
-        // 간단히 메시지 띄우고 다시 시작
-        ConsoleHelper::setCursorPosition(20, 10);
-        ConsoleHelper::setColor(RED);
-        printf("GAME OVER - Press Any Key to Restart");
+        // 6. 게임 오버 처리
+        ConsoleHelper::write(20, 10, "GAME OVER - Press Any Key", RED);
+        ConsoleHelper::render(); // 마지막 화면 갱신
+
+        while (_kbhit()) _getch(); // 버퍼 비우기
         _getch();
     }
 }

@@ -3,11 +3,13 @@
 #include "ConsoleHelper.h"
 
 int main() {
-    system("mode con:cols=100 lines=30");
+    // [수정] cols=100 -> 120, lines=30 -> 40 으로 변경 (ConsoleHelper 설정과 통일)
+    system("mode con:cols=120 lines=40");
     system("title Tetris Project");
     ConsoleHelper::setCursorVisible(false);
 
     while (true) {
+        // ... (나머지 코드는 그대로 유지) ...
         system("cls");
         ConsoleHelper::setColor(SKY_BLUE);
         ConsoleHelper::setCursorPosition(20, 5);  printf("====================================");
