@@ -19,17 +19,21 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BattleTetris.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="ConsoleHelper.h" />
     <ClInclude Include="TetrisBlock.h" />
     <ClInclude Include="TetrisBoard.h" />
+    <ClInclude Include="TetrisCore.h" />
     <ClInclude Include="TetrisGame.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BattleTetris.cpp" />
     <ClCompile Include="ConsoleHelper.cpp" />
     <ClCompile Include="testmain.cpp" />
     <ClCompile Include="TetrisBlock.cpp" />
     <ClCompile Include="TetrisBoard.cpp" />
+    <ClCompile Include="TetrisCore.cpp" />
     <ClCompile Include="TetrisGame.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

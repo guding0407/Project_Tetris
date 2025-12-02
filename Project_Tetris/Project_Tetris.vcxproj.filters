@@ -30,6 +30,12 @@
     <ClInclude Include="TetrisGame.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="BattleTetris.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="TetrisCore.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="testmain.cpp">
@@ -45,6 +51,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="TetrisGame.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="BattleTetris.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="TetrisCore.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
