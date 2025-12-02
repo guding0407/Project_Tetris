@@ -18,9 +18,9 @@ int main() {
         ConsoleHelper::setCursorPosition(25, 10); printf("[1] SINGLE PLAYER (CLASSIC)");
         ConsoleHelper::setCursorPosition(25, 11); printf("[2] SINGLE PLAYER (SEA LEVEL MODE)");
         ConsoleHelper::setCursorPosition(25, 12); printf("[3] 2-PLAYER BATTLE (CLASSIC)");
-        // [ì¶”ê°€] 4ë²ˆ ë©”ë‰´ ì¶”ê°€
+        // [Ãß°¡] 4¹ø ¸Ş´º Ãß°¡
         ConsoleHelper::setCursorPosition(25, 13); printf("[4] 2-PLAYER BATTLE (SEA LEVEL MODE)");
-        // [ë³€ê²½] ì¢…ë£Œ ë©”ë‰´ ë²ˆí˜¸ ë³€ê²½ (4 -> 5)
+        // [º¯°æ] Á¾·á ¸Ş´º ¹øÈ£ º¯°æ (4 -> 5)
         ConsoleHelper::setCursorPosition(25, 14); printf("[5] EXIT");
 
         ConsoleHelper::setCursorPosition(25, 17); printf(">> SELECT OPTION: ");
@@ -38,15 +38,15 @@ int main() {
         }
         else if (choice == '3') {
             BattleTetris battle;
-            battle.run(false); // í´ë˜ì‹ ëª¨ë“œ
+            battle.run(false); // Å¬·¡½Ä ¸ğµå
         }
         else if (choice == '4') {
-            // [ì¶”ê°€] 2ì¸ìš© í•´ìˆ˜ë©´ ëª¨ë“œ ì‹¤í–‰
+            // [Ãß°¡] 2ÀÎ¿ë ÇØ¼ö¸é ¸ğµå ½ÇÇà
             BattleTetris battle;
-            battle.run(true); // í•´ìˆ˜ë©´ ëª¨ë“œ ì¼œê¸° (true)
+            battle.run(true); // ÇØ¼ö¸é ¸ğµå ÄÑ±â (true)
         }
         else if (choice == '5' || choice == KEY_ESC) {
-            // [ë³€ê²½] ì¢…ë£Œ í‚¤ 5ë²ˆìœ¼ë¡œ ë³€ê²½
+            // [º¯°æ] Á¾·á Å° 5¹øÀ¸·Î º¯°æ
             ConsoleHelper::setCursorPosition(25, 19);
             printf("Exiting Game...");
             Sleep(1000);

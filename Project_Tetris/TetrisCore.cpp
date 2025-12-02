@@ -290,20 +290,32 @@ void TetrisCore::eraseCurBlock(int shape, int angle, int x, int y) {
 }
 
 int TetrisCore::strikeCheck(int shape, int angle, int x, int y) {
-    for (int r = 0; r < 4; r++) {
-        for (int c = 0; c < 4; c++) {
-            if (!TetrisBlock::getShape(shape, angle, r, c)) continue;
+    // [최적화] 함수 호출 반복 대신 비트마스크를 한 번 가져옴
+    unsigned short mask = TetrisBlock::getShapeMask(shape, angle);
+    unsigned short bitChecker = 0x8000; // 1000 0000 0000 0000 (최상위 비트)
+
+    for (int i = 0; i < 16; i++) {
+        // 해당 비트가 1인 경우에만 충돌 검사 수행 (비트가 0이면 루프 패스)
+        if (mask & bitChecker) {
+            int r = i / 4; // 행
+            int c = i % 4; // 열
+
             int gy = y + r;
             int gx = x + c;
 
-            if (gx <= 0 || gx >= 13) return 1; // 벽 충돌
-            if (gy < 0) continue;
-            if (gy >= 21) return 1; // 바닥 충돌
+            // 1. 벽 충돌 (좌우)
+            if (gx <= 0 || gx >= 13) return 1;
 
-            // 보드판의 블록과 충돌 확인
-            int blockType = board.getBlock(gy, gx);
-            if (blockType != EMPTY_BLOCK) return 1;
+            // 2. 바닥 충돌
+            if (gy >= 21) return 1;
+
+            // 3. 보드판의 다른 블록과 충돌 (화면 위쪽(gy < 0)은 검사 제외)
+            if (gy >= 0) {
+                if (board.getBlock(gy, gx) != EMPTY_BLOCK) return 1;
+            }
         }
+        // 검사 비트를 오른쪽으로 한 칸 이동
+        bitChecker >>= 1;
     }
     return 0;
 }
