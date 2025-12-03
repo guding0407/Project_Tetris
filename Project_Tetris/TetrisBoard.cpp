@@ -27,9 +27,9 @@ void TetrisBoard::initBoard() {
 
 void TetrisBoard::drawBoard(int level) {
     // 상단 벽
-    for (int i = 0; i < 14; i++) {
+   /* for (int i = 0; i < 14; i++) {
         ConsoleHelper::write(ab_x + (i * 2), ab_y - 1, "■", DARK_GRAY);
-    }
+    }*/
 
     // 보드 내부
     for (int i = 0; i < 21; i++) {
