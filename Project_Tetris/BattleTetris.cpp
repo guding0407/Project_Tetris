@@ -9,16 +9,15 @@
 #define VK_D 0x44
 
 void BattleTetris::run(bool waterMode) {
-    // 1. 초기화 (더블 버퍼링용)
+    // 1. 초기화
     ConsoleHelper::init();
 
-    // 2. 로고 화면 출력 (printf 사용해도 무관한 구간)
+    // 2. 로고 화면
     system("cls");
     ConsoleHelper::setColor(SKY_BLUE);
     printf("\n\n");
     printf("        ECO - TETRIS        \n");
 
-    // 모드에 따라 부제목 다르게 출력
     if (waterMode) printf(" 2-PLAYER BATTLE (SEA LEVEL)\n");
     else           printf("  2-PLAYER BATTLE (CLASSIC) \n");
 
@@ -28,39 +27,38 @@ void BattleTetris::run(bool waterMode) {
 
     // 키 입력 대기
     while (_kbhit()) _getch();
-    _getch();
+    _getch(); // 여기서 누른 키(보통 엔터)가 게임 내 입력으로 이어지지 않게 해야 함
 
-    // 3. 게임 화면 전환
+    // 3. 게임 화면 준비
     system("cls");
     ConsoleHelper::setCursorVisible(false);
 
-    // 4. 플레이어 생성 (x좌표, y좌표, 해수면모드, 전투모드=true)
+    // 4. 플레이어 생성
     TetrisCore player1(4, 2, waterMode, true);
     TetrisCore player2(50, 2, waterMode, true);
 
-    // 5. 게임 초기화 (레벨 0부터 시작)
     player1.initGame(0);
     player2.initGame(0);
 
-    // ==========================================
-    // [변수 선언] 입력 제어용
-    // ==========================================
+    // [핵심 수정] P2 하드드롭 버그 수정
+    // 사용자가 시작하려고 누른 엔터키가 P2의 하드드롭(Enter)으로 인식되는 것을 방지
+    Sleep(500); // 손을 뗄 시간을 줌
+    GetAsyncKeyState(VK_RETURN); // 엔터키 입력 버퍼 비우기 (중요)
 
-    // 회전/하드드롭 중복 입력 방지 (토글 방식)
+    // ==========================================
+    // [변수 선언]
+    // ==========================================
     bool p1_rotate_pressed = false;
     bool p1_drop_pressed = false;
     bool p2_rotate_pressed = false;
     bool p2_drop_pressed = false;
 
-    // 이동 속도 조절용 타이머
     int p1_move_timer = 0;
     int p2_move_timer = 0;
-
-    // ★ 이동 감도 조절 (숫자가 클수록 이동이 느려짐. 3~5 추천)
     const int MOVE_SPEED = 3;
 
     while (true) {
-        // [Step 1] 버퍼 비우기 (매 프레임 시작)
+        // [Step 1] 버퍼 비우기
         ConsoleHelper::clearBuffer();
 
         // ==========================================
@@ -68,19 +66,15 @@ void BattleTetris::run(bool waterMode) {
         // ==========================================
         int winner = 0; // 0:진행중, 1:P1승리, 2:P2승리
 
-        if (player1.isGameOver()) {
-            winner = 2; // P1 사망 -> P2 승리
-        }
-        else if (player2.isGameOver()) {
-            winner = 1; // P2 사망 -> P1 승리
-        }
+        if (player1.isGameOver()) winner = 2;
+        else if (player2.isGameOver()) winner = 1;
 
         if (winner != 0) {
-            // 결과 박스 그리기 (write 사용)
+            // 결과 박스 출력
             int boxX = 32;
             int boxY = 10;
 
-            ConsoleHelper::write(boxX, boxY++, "┏━━━━━━━━━━━━━━━━━━┓", YELLOW);
+            ConsoleHelper::write(boxX, boxY++, "┏━━━━━━━━━┓", YELLOW);
             ConsoleHelper::write(boxX, boxY++, "┃                  ┃", YELLOW);
 
             if (winner == 1) ConsoleHelper::write(boxX, boxY, "┃   PLAYER 1 WIN!  ┃", YELLOW);
@@ -88,16 +82,15 @@ void BattleTetris::run(bool waterMode) {
             boxY++;
 
             ConsoleHelper::write(boxX, boxY++, "┃                  ┃", YELLOW);
-            ConsoleHelper::write(boxX, boxY++, "┗━━━━━━━━━━━━━━━━━━┛", YELLOW);
+            ConsoleHelper::write(boxX, boxY++, "┗━━━━━━━━━┛", YELLOW);
 
             ConsoleHelper::write(boxX + 2, boxY + 1, "Press Any Key...", WHITE);
 
-            // 결과를 화면에 렌더링하고 종료 대기
             ConsoleHelper::render();
 
             while (_kbhit()) _getch();
             _getch();
-            break; // 메인 화면으로 복귀
+            break;
         }
 
         // ==========================================
@@ -106,7 +99,7 @@ void BattleTetris::run(bool waterMode) {
         if (p1_move_timer > 0) p1_move_timer--;
         if (p2_move_timer > 0) p2_move_timer--;
 
-        // --- [Player 1 : WASD + Space] ---
+        // --- [Player 1] ---
         if (GetAsyncKeyState(VK_W) & 0x8000) {
             if (!p1_rotate_pressed) { player1.handleInput(KEY_UP); p1_rotate_pressed = true; }
         }
@@ -125,7 +118,7 @@ void BattleTetris::run(bool waterMode) {
             if (moved) p1_move_timer = MOVE_SPEED;
         }
 
-        // --- [Player 2 : 방향키 + Enter] ---
+        // --- [Player 2] ---
         if (GetAsyncKeyState(VK_UP) & 0x8000) {
             if (!p2_rotate_pressed) { player2.handleInput(KEY_UP); p2_rotate_pressed = true; }
         }
@@ -147,25 +140,25 @@ void BattleTetris::run(bool waterMode) {
         if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) break;
 
         // ==========================================
-        // [Step 4] 로직 업데이트 & 그리기(Write)
+        // [Step 4] 로직 업데이트 & 그리기
         // ==========================================
         player1.updateLogic();
-        player1.draw(); // 메모리에 그림
+        player1.draw();
 
         player2.updateLogic();
-        player2.draw(); // 메모리에 그림
+        player2.draw();
 
-        // 공격 시스템 적용
+        // 공격 시스템
         int p1_attack = player1.getLinesCleared();
         int p2_attack = player2.getLinesCleared();
         if (p1_attack >= 2) player2.addGarbageLines(p1_attack - 1);
         if (p2_attack >= 2) player1.addGarbageLines(p2_attack - 1);
 
-        // VS 로고 출력
-        ConsoleHelper::write(35, 10, "VS", YELLOW);
+        // [수정] "VS" 텍스트 삭제됨 (요청사항 반영)
+        // ConsoleHelper::write(35, 10, "VS", YELLOW); <-- 삭제
 
         // ==========================================
-        // [Step 5] 최종 렌더링 (화면 출력)
+        // [Step 5] 최종 렌더링
         // ==========================================
         ConsoleHelper::render();
 

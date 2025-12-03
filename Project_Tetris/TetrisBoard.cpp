@@ -93,12 +93,8 @@ void TetrisBoard::setBlock(int y, int x, int val) {
         total_block[y][x] = val;
 }
 
-// [핵심 수정] 라인 삭제 시 바닥(row 20)을 절대 건드리지 않도록 수정
 int TetrisBoard::deleteFullLines(int ab_x, int ab_y) {
     int linesCleared = 0;
-
-    // 바닥 바로 윗줄(19)까지만 검사해야 함. 
-    // waterHeight가 0이어도 20번 줄(바닥)은 검사하면 안 됨!
     int checkLimit = 20 - waterHeight;
 
     for (int i = 0; i < checkLimit; i++) {
@@ -111,21 +107,24 @@ int TetrisBoard::deleteFullLines(int ab_x, int ab_y) {
             if (total_block[i][j] == WATER_BLOCK) break;
         }
 
-        if (j == 13) { // 한 줄이 꽉 참
+        if (j == 13) {
             linesCleared++;
 
-            // 1. 애니메이션
+            // [수정 1] 이펙트를 "==" 대신 "■"로 변경하여 버퍼 구조 통일
             for (int k = 1; k < 13; k++) {
-                ConsoleHelper::write((k * 2) + ab_x, i + ab_y, "==", SKY_BLUE);
+                ConsoleHelper::write((k * 2) + ab_x, i + ab_y, "■", SKY_BLUE);
                 ConsoleHelper::render();
                 Sleep(10);
             }
-            // 2. 이펙트 제거
+
+            // [수정 2] 이펙트 지우기 및 ★즉시 렌더링★ 추가
+            // 화면을 깨끗한 검은색으로 밀어버려야 잔상이 남지 않습니다.
             for (int k = 1; k < 13; k++) {
                 ConsoleHelper::write((k * 2) + ab_x, i + ab_y, "  ", BLACK);
             }
+            ConsoleHelper::render(); // [중요] 지운 것을 화면에 즉시 반영
 
-            // 3. 윗줄 내리기
+            // 3. 데이터 이동
             for (int k = i; k > 0; k--) {
                 for (int col = 1; col < 13; col++)
                     total_block[k][col] = total_block[k - 1][col];
