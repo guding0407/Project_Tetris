@@ -105,9 +105,11 @@ int main() {
 
         // --- 로고 그리기 ---
         ConsoleHelper::setColor(SKY_BLUE);
-        ConsoleHelper::setCursorPosition(20, 5);  printf("===================================");
-        ConsoleHelper::setCursorPosition(20, 6);  printf("       TETRIS PROJECT LAUNCHER      ");
-        ConsoleHelper::setCursorPosition(20, 7);  printf("===================================");
+
+        ConsoleHelper::setCursorPosition(25, 5);  printf("====================================");
+        ConsoleHelper::setCursorPosition(25, 6);  printf("       TETRIS PROJECT LAUNCHER      ");
+        ConsoleHelper::setCursorPosition(25, 7);  printf("====================================");
+
 
         // --- 메뉴 그리기 ---
         ConsoleHelper::setColor(WHITE);

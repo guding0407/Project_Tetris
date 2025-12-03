@@ -10,7 +10,7 @@ TetrisCore::TetrisCore(int x, int y, bool waterMode, bool isBattle) {
     // 난이도 데이터 초기화
     if (isBattle) {
         // 2인용 (빠른 레벨업)
-        stage_data[0] = { 40, 20, 5, 300 };
+        stage_data[0] = { 40, 20, 5, 10 };
         stage_data[1] = { 38, 18, 5, 280 };
         stage_data[2] = { 35, 18, 5, 250 };
         stage_data[3] = { 30, 17, 5, 220 };
@@ -77,10 +77,13 @@ void TetrisCore::updateLogic() {
         water_tick_count++;
         if (water_tick_count >= stage_data[level].water_speed) {
             water_tick_count = 0;
+
+            // 물 높이가 18 이상이면 게임오버
             if (board.getWaterHeight() >= 18) {
                 is_gameover = true;
             }
-            else {
+            // [수정] 물 높이가 10(절반) 미만일 때만 상승시킴!
+            else if (board.getWaterHeight() < 10) {
                 board.raiseWaterLevel();
                 draw();
             }
@@ -196,8 +199,10 @@ void TetrisCore::showGameStat() {
     ConsoleHelper::write(uiX, uiY, "NEXT", WHITE);
     ConsoleHelper::write(uiX, uiY + 5, "LV: ", WHITE);
     ConsoleHelper::writeInt(uiX + 4, uiY + 5, level + 1, WHITE);
-    ConsoleHelper::write(uiX, uiY + 7, "SC: ", WHITE);
-    ConsoleHelper::writeInt(uiX + 4, uiY + 7, score, WHITE);
+
+    // SCORE 수정 완료
+    ConsoleHelper::write(uiX, uiY + 7, "SCORE: ", WHITE);
+    ConsoleHelper::writeInt(uiX + 7, uiY + 7, score, WHITE);
 
     int remainLines = stage_data[level].clear_line - lines;
     if (remainLines < 0) remainLines = 0;
@@ -209,10 +214,8 @@ void TetrisCore::showNextBlock(int shape) {
     int uiX = ab_x + 30;
     int uiY = ab_y + 1;
 
-    // 지우기 (표준 공백 8칸)
     for (int i = 0; i < 4; i++) ConsoleHelper::write(uiX, uiY + i, "        ", BLACK);
 
-    // 그리기 (네모 문자)
     for (int r = 0; r < 4; r++) {
         for (int c = 0; c < 4; c++) {
             if (TetrisBlock::getShape(shape, 0, r, c)) {
@@ -246,7 +249,6 @@ void TetrisCore::eraseCurBlock(int shape, int angle, int x, int y) {
                 ConsoleHelper::write((c + x) * 2 + ab_x, gy + ab_y, "■", WATER_COLOR);
             }
             else {
-                // 표준 공백 2칸
                 ConsoleHelper::write((c + x) * 2 + ab_x, gy + ab_y, "  ", BLACK);
             }
         }
@@ -260,11 +262,10 @@ int TetrisCore::strikeCheck(int shape, int angle, int x, int y) {
             int gy = y + r;
             int gx = x + c;
 
-            if (gx <= 0 || gx >= 13) return 1; // 벽
+            if (gx <= 0 || gx >= 13) return 1;
             if (gy < 0) continue;
-            if (gy >= 21) return 1; // 바닥
+            if (gy >= 21) return 1;
 
-            // 보드판 블록 충돌
             if (board.getBlock(gy, gx) != EMPTY_BLOCK) return 1;
         }
     }
@@ -289,7 +290,7 @@ int TetrisCore::moveBlock(int* shape, int* angle, int* x, int* y, int* next_shap
 
     if (strikeCheck(*shape, *angle, *x, *y)) {
         (*y)--;
-        if (*y < 0) return 1; // 게임 오버
+        if (*y < 0) return 1;
 
         mergeBlock(*shape, *angle, *x, *y);
         *shape = *next_shape;
