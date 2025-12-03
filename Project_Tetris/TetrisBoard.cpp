@@ -1,4 +1,4 @@
-#include "TetrisBoard.h"
+ï»¿#include "TetrisBoard.h"
 #include "ConsoleHelper.h"
 
 TetrisBoard::TetrisBoard() {
@@ -13,25 +13,25 @@ void TetrisBoard::setBasePosition(int x, int y) {
 }
 
 void TetrisBoard::initBoard() {
-    // ³»ºÎ °ø°£ ÃÊ±âÈ­
+    // ë‚´ë¶€ ê³µê°„ ì´ˆê¸°í™”
     for (int i = 0; i < 20; i++) {
         for (int j = 0; j < 14; j++) {
             if (j == 0 || j == 13) total_block[i][j] = WALL_BLOCK;
             else total_block[i][j] = EMPTY_BLOCK;
         }
     }
-    // [Áß¿ä] ¹Ù´Ú º® ¼³Á¤ (ÀÌ°Ô ¾øÀ¸¸é ¶Õ¸²)
+    // [ì¤‘ìš”] ë°”ë‹¥ ë²½ ì„¤ì • (ì´ê²Œ ì—†ìœ¼ë©´ ëš«ë¦¼)
     for (int j = 0; j < 14; j++) total_block[20][j] = WALL_BLOCK;
     waterHeight = 0;
 }
 
 void TetrisBoard::drawBoard(int level) {
-    // »ó´Ü º®
+    // ìƒë‹¨ ë²½
    /* for (int i = 0; i < 14; i++) {
-        ConsoleHelper::write(ab_x + (i * 2), ab_y - 1, "¡á", DARK_GRAY);
+        ConsoleHelper::write(ab_x + (i * 2), ab_y - 1, "â– ", DARK_GRAY);
     }*/
 
-    // º¸µå ³»ºÎ
+    // ë³´ë“œ ë‚´ë¶€
     for (int i = 0; i < 21; i++) {
         for (int j = 0; j < 14; j++) {
             int blockVal = total_block[i][j];
@@ -41,17 +41,17 @@ void TetrisBoard::drawBoard(int level) {
             if (blockVal == WALL_BLOCK) {
                 if (j == 0 || j == 13 || i == 20) color = (level % 6) + 1;
                 else color = DARK_GRAY;
-                shape = "¡á";
+                shape = "â– ";
             }
             else if (blockVal == WATER_BLOCK) {
                 color = WATER_COLOR;
-                shape = "¡á";
+                shape = "â– ";
             }
-            else if (blockVal == 1) { // ±»Àº ºí·Ï
+            else if (blockVal == 1) { // êµ³ì€ ë¸”ë¡
                 color = GRAY;
-                shape = "¡á";
+                shape = "â– ";
             }
-            // ±× ¿Ü¿¡´Â "  " (°ø¹é)
+            // ê·¸ ì™¸ì—ëŠ” "  " (ê³µë°±)
 
             ConsoleHelper::write(ab_x + (j * 2), ab_y + i, shape, color);
         }
@@ -68,7 +68,7 @@ void TetrisBoard::raiseWaterLevel() {
             total_block[targetRow][j] = WATER_BLOCK;
         }
     }
-    // ±×¸®±â ¾÷µ¥ÀÌÆ®´Â drawBoard¿¡¼­ ¼öÇàµÊ
+    // ê·¸ë¦¬ê¸° ì—…ë°ì´íŠ¸ëŠ” drawBoardì—ì„œ ìˆ˜í–‰ë¨
 }
 
 void TetrisBoard::lowerWaterLevel() {
@@ -109,27 +109,27 @@ int TetrisBoard::deleteFullLines(int ab_x, int ab_y) {
         if (j == 13) {
             linesCleared++;
 
-            // [ÇÙ½É ¼öÁ¤ 1] ¾Ö´Ï¸ÞÀÌ¼Ç ½ÃÀÛ Àü¿¡ ¹è°æ(ÇöÀç È­¸é)À» º¹±¸!
-            // ÀÌ°É ¾È ÇÏ¸é ºó È­¸é¿¡¼­ ÆÄ¶õ ºí·Ï¸¸ ±ôºý°Å¸³´Ï´Ù.
+            // [í•µì‹¬ ìˆ˜ì • 1] ì• ë‹ˆë©”ì´ì…˜ ì‹œìž‘ ì „ì— ë°°ê²½(í˜„ìž¬ í™”ë©´)ì„ ë³µêµ¬!
+            // ì´ê±¸ ì•ˆ í•˜ë©´ ë¹ˆ í™”ë©´ì—ì„œ íŒŒëž€ ë¸”ë¡ë§Œ ê¹œë¹¡ê±°ë¦½ë‹ˆë‹¤.
             ConsoleHelper::recover();
 
-            // 1. ¶óÀÎ »èÁ¦ ÀÌÆåÆ® (ÆÄ¶õ»ö)
+            // 1. ë¼ì¸ ì‚­ì œ ì´íŽ™íŠ¸ (íŒŒëž€ìƒ‰)
             for (int k = 1; k < 13; k++) {
-                ConsoleHelper::write((k * 2) + ab_x, i + ab_y, "¡á", SKY_BLUE);
-                ConsoleHelper::render(); // ÀÌÁ¦ ¹è°æÀÌ ÀÖ´Â »óÅÂ¿¡¼­ ÀÌÆåÆ®¸¸ ±×·ÁÁü
+                ConsoleHelper::write((k * 2) + ab_x, i + ab_y, "â– ", SKY_BLUE);
+                ConsoleHelper::render(); // ì´ì œ ë°°ê²½ì´ ìžˆëŠ” ìƒíƒœì—ì„œ ì´íŽ™íŠ¸ë§Œ ê·¸ë ¤ì§
                 Sleep(10);
             }
 
-            // [ÇÙ½É ¼öÁ¤ 2] ÀÌÆåÆ® Áö¿ì±â 
-            // write·Î Áö¿ì°í ¹Ù·Î renderÇÏÁö ¸»°í, 
-            // recover()·Î ´Ù½Ã ¹è°æÀ» ºÒ·¯¿Â µÚ ÇØ´ç ÁÙ¸¸ Áö¿ì´Â °ÍÀÌ ´õ ¾ÈÀüÇÕ´Ï´Ù.
-            // ÇÏÁö¸¸ °£´ÜÇÏ°Ô °ø¹éÀ¸·Î µ¤°í renderÇØµµ µË´Ï´Ù.
+            // [í•µì‹¬ ìˆ˜ì • 2] ì´íŽ™íŠ¸ ì§€ìš°ê¸° 
+            // writeë¡œ ì§€ìš°ê³  ë°”ë¡œ renderí•˜ì§€ ë§ê³ , 
+            // recover()ë¡œ ë‹¤ì‹œ ë°°ê²½ì„ ë¶ˆëŸ¬ì˜¨ ë’¤ í•´ë‹¹ ì¤„ë§Œ ì§€ìš°ëŠ” ê²ƒì´ ë” ì•ˆì „í•©ë‹ˆë‹¤.
+            // í•˜ì§€ë§Œ ê°„ë‹¨í•˜ê²Œ ê³µë°±ìœ¼ë¡œ ë®ê³  renderí•´ë„ ë©ë‹ˆë‹¤.
             for (int k = 1; k < 13; k++) {
                 ConsoleHelper::write((k * 2) + ab_x, i + ab_y, "  ", BLACK);
             }
             ConsoleHelper::render();
 
-            // 3. µ¥ÀÌÅÍ ÀÌµ¿ (±âÁ¸ ·ÎÁ÷ À¯Áö)
+            // 3. ë°ì´í„° ì´ë™ (ê¸°ì¡´ ë¡œì§ ìœ ì§€)
             for (int k = i; k > 0; k--) {
                 for (int col = 1; col < 13; col++)
                     total_block[k][col] = total_block[k - 1][col];

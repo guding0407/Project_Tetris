@@ -1,11 +1,11 @@
-#pragma once
+ï»¿#pragma once
 #include "Common.h"
 
-// 2ÀÎ¿ë ¸ğµå Å¬·¡½º
+// 2ì¸ìš© ëª¨ë“œ í´ë˜ìŠ¤
 class BattleTetris {
 public:
     void showControls();
-    // [¼öÁ¤ Àü] void run();
-    // [¼öÁ¤ ÈÄ] ÀÎÀÚ(waterMode)¸¦ ¹ŞÀ» ¼ö ÀÖµµ·Ï º¯°æ
+    // [ìˆ˜ì • ì „] void run();
+    // [ìˆ˜ì • í›„] ì¸ì(waterMode)ë¥¼ ë°›ì„ ìˆ˜ ìˆë„ë¡ ë³€ê²½
     void run(bool waterMode = false);
 };

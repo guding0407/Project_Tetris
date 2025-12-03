@@ -1,11 +1,11 @@
-#include "ConsoleHelper.h"
-// <cstdio> Á¦°Å (C++ cout »ç¿ë)
+ï»¿#include "ConsoleHelper.h"
+// <cstdio> ì œê±° (C++ cout ì‚¬ìš©)
 
 Pixel ConsoleHelper::frontBuffer[SCREEN_HEIGHT][SCREEN_WIDTH];
 Pixel ConsoleHelper::backBuffer[SCREEN_HEIGHT][SCREEN_WIDTH];
 
 void ConsoleHelper::init() {
-    // [Rule 7] C++ ÀÔÃâ·Â ¼Óµµ Çâ»ó (printf¿Í µ¿±âÈ­ ²û)
+    // [Rule 7] C++ ì…ì¶œë ¥ ì†ë„ í–¥ìƒ (printfì™€ ë™ê¸°í™” ë”)
     std::ios::sync_with_stdio(false);
     std::cout.tie(nullptr);
 
@@ -59,7 +59,7 @@ void ConsoleHelper::write(int x, int y, std::string str, int color) {
 }
 
 void ConsoleHelper::writeInt(int x, int y, int num, int color) {
-    // [Rule 7] sprintf ´ë½Å std::to_string »ç¿ë
+    // [Rule 7] sprintf ëŒ€ì‹  std::to_string ì‚¬ìš©
     write(x, y, std::to_string(num), color);
 }
 
@@ -77,7 +77,7 @@ void ConsoleHelper::render() {
                 (backBuffer[y][x].content != frontBuffer[y][x].content ||
                     backBuffer[y][x].color != frontBuffer[y][x].color))
             {
-                // [Rule 6] static_cast »ç¿ë
+                // [Rule 6] static_cast ì‚¬ìš©
                 COORD pos = { static_cast<SHORT>(x), static_cast<SHORT>(y) };
                 SetConsoleCursorPosition(hConsole, pos);
                 SetConsoleTextAttribute(hConsole, backBuffer[y][x].color);
@@ -89,7 +89,7 @@ void ConsoleHelper::render() {
             }
         }
     }
-    // ¹öÆÛ °­Á¦ ºñ¿ì±â (coutÀº ¹öÆÛ¸µµÇ¹Ç·Î ÇÊ¼ö)
+    // ë²„í¼ ê°•ì œ ë¹„ìš°ê¸° (coutì€ ë²„í¼ë§ë˜ë¯€ë¡œ í•„ìˆ˜)
     std::cout << std::flush;
 }
 

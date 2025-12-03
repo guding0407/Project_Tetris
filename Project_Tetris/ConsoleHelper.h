@@ -1,8 +1,8 @@
-#pragma once
+ï»¿#pragma once
 #include "Common.h"
 #include <string>
 
-// [Rule 2] constexpr Àû¿ë
+// [Rule 2] constexpr ì ìš©
 constexpr int SCREEN_WIDTH = 120;
 constexpr int SCREEN_HEIGHT = 40;
 
@@ -23,7 +23,7 @@ public:
     static void write(int x, int y, std::string str, int color = WHITE);
     static void writeInt(int x, int y, int num, int color = WHITE);
 
-    // [Rule 7] printf ´ë½Å coutÀ» »ç¿ëÇÏ´Â ·»´õ¸µ ÇÔ¼ö
+    // [Rule 7] printf ëŒ€ì‹  coutì„ ì‚¬ìš©í•˜ëŠ” ë Œë”ë§ í•¨ìˆ˜
     static void render();
 
     static void setCursorVisible(bool visible);

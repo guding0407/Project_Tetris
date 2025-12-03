@@ -1,16 +1,16 @@
-#pragma once
+ï»¿#pragma once
 
 class TetrisBlock {
 private:
-    // [º¯°æ] 4x4x4 char ¹è¿­ -> 16ºñÆ® Á¤¼ö(unsigned short) ¹è¿­·Î ¾ĞÃà
-    // ¿¹: 0010 0010 0010 0010 (2Áø¼ö) -> 0x2222 (16Áø¼ö)
+    // [ë³€ê²½] 4x4x4 char ë°°ì—´ -> 16ë¹„íŠ¸ ì •ìˆ˜(unsigned short) ë°°ì—´ë¡œ ì••ì¶•
+    // ì˜ˆ: 0010 0010 0010 0010 (2ì§„ìˆ˜) -> 0x2222 (16ì§„ìˆ˜)
     static unsigned short shapes[7][4];
 
 public:
-    // (r, c) À§Ä¡¿¡ ºí·ÏÀÌ Á¸ÀçÇÏ´ÂÁö ºñÆ® ¿¬»êÀ¸·Î È®ÀÎ
+    // (r, c) ìœ„ì¹˜ì— ë¸”ë¡ì´ ì¡´ì¬í•˜ëŠ”ì§€ ë¹„íŠ¸ ì—°ì‚°ìœ¼ë¡œ í™•ì¸
     static int getShape(int shape, int angle, int r, int c);
 
-    // [Ãß°¡] ¼º´É ÃÖÀûÈ­¸¦ À§ÇØ ¿øº» ºñÆ®¸¶½ºÅ© °ªÀ» Á÷Á¢ °¡Á®¿À´Â ÇÔ¼ö
+    // [ì¶”ê°€] ì„±ëŠ¥ ìµœì í™”ë¥¼ ìœ„í•´ ì›ë³¸ ë¹„íŠ¸ë§ˆìŠ¤í¬ ê°’ì„ ì§ì ‘ ê°€ì ¸ì˜¤ëŠ” í•¨ìˆ˜
     static unsigned short getShapeMask(int shape, int angle);
 
     static int getColor(int shape);

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Common.h"
 #include "TetrisBoard.h"
 #include "TetrisBlock.h"
@@ -50,7 +50,7 @@ protected:
     int strikeCheck(int shape, int angle, int x, int y);
     void mergeBlock(int shape, int angle, int x, int y);
 
-    // [Rule 1] Æ÷ÀÎÅÍ(*) -> ÂüÁ¶ÀÚ(&)·Î º¯°æ
+    // [Rule 1] í¬ì¸í„°(*) -> ì°¸ì¡°ì(&)ë¡œ ë³€ê²½
     int moveBlock(int& shape, int& angle, int& x, int& y, int& next_shape);
 
     void checkFullLine();

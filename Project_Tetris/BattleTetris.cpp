@@ -1,4 +1,4 @@
-#include "BattleTetris.h"
+﻿#include "BattleTetris.h"
 #include "TetrisCore.h"
 #include "ConsoleHelper.h"
 

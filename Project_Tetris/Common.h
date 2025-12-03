@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <windows.h>
 #include <iostream>
 #include <conio.h>
@@ -9,7 +9,7 @@
 
 using namespace std;
 
-// [Rule 2] #define -> constexpr (ÄÄÆÄÀÏ Å¸ÀÓ »ó¼ö)
+// [Rule 2] #define -> constexpr (ì»´íŒŒì¼ íƒ€ì„ ìƒìˆ˜)
 constexpr int KEY_LEFT = 0x4b;
 constexpr int KEY_RIGHT = 0x4d;
 constexpr int KEY_UP = 0x48;
@@ -18,12 +18,12 @@ constexpr int KEY_SPACE = 32;
 constexpr int KEY_ENTER = 13;
 constexpr int KEY_ESC = 27;
 
-// ºí·° »óÅÂ »ó¼ö
+// ë¸”ëŸ­ ìƒíƒœ ìƒìˆ˜
 constexpr int EMPTY_BLOCK = 0;
 constexpr int WALL_BLOCK = 1;
 constexpr int WATER_BLOCK = 9;
 
-// »ö»ó ¿­°ÅÇü
+// ìƒ‰ìƒ ì—´ê±°í˜•
 enum Color {
     BLACK, DARK_BLUE, DARK_GREEN, DARK_SKY_BLUE,
     DARK_RED, DARK_VOILET, DARK_YELLOW, GRAY,
@@ -33,7 +33,7 @@ enum Color {
     WATER_COLOR = BLUE
 };
 
-// ³­ÀÌµµ µ¥ÀÌÅÍ
+// ë‚œì´ë„ ë°ì´í„°
 struct Stage {
     int speed;
     int stick_rate;

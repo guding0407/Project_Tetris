@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Common.h"
 
 class TetrisBoard {
@@ -13,8 +13,8 @@ public:
     void initBoard();
 
     void drawBoard(int level);
-    void raiseWaterLevel(); // ÇØ¼ö¸é »ó½Â
-    void lowerWaterLevel(); // ÇØ¼ö¸é ÇÏ°­
+    void raiseWaterLevel(); // í•´ìˆ˜ë©´ ìƒìŠ¹
+    void lowerWaterLevel(); // í•´ìˆ˜ë©´ í•˜ê°•
     int getWaterHeight() const { return waterHeight; }
 
     int getBlock(int y, int x) const;
