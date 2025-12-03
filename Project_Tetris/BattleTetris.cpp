@@ -2,21 +2,21 @@
 #include "TetrisCore.h"
 #include "ConsoleHelper.h"
 
-// Å°º¸µå °¡»ó Å° ÄÚµå (ÇÃ·¹ÀÌ¾î 1 - WASD)
-#define VK_W 0x57
-#define VK_A 0x41
-#define VK_S 0x53
-#define VK_D 0x44
+// [Rule 2] constexpr ìƒìˆ˜ ì‚¬ìš©
+constexpr int VK_W = 0x57;
+constexpr int VK_A = 0x41;
+constexpr int VK_S = 0x53;
+constexpr int VK_D = 0x44;
 
-// [Ãß°¡] Á¶ÀÛ¹ı ¼³¸í È­¸é ±¸Çö
+// [ì¶”ê°€] ì¡°ì‘ë²• ì„¤ëª… í™”ë©´ êµ¬í˜„
 void BattleTetris::showControls() {
     system("cls");
     ConsoleHelper::setCursorVisible(false);
 
-    // --- Á¦¸ñ ---
+    // --- ì œëª© ---
     ConsoleHelper::setColor(YELLOW);
     ConsoleHelper::setCursorPosition(12, 3);
-    printf("¦®¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬ BATTLE CONTROLS ¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¯");
+    printf("â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â” BATTLE CONTROLS â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”“");
 
     // --- PLAYER 1 (Left) ---
     int p1_x = 15;
@@ -25,7 +25,7 @@ void BattleTetris::showControls() {
     ConsoleHelper::setCursorPosition(p1_x, y++); printf("[ PLAYER 1 ]");
     ConsoleHelper::setColor(GRAY);
     ConsoleHelper::setCursorPosition(p1_x, y++); printf("  (WASD)    ");
-    y++; // °ø¹é
+    y++; // ê³µë°±
     ConsoleHelper::setColor(WHITE);
     ConsoleHelper::setCursorPosition(p1_x, y++); printf("Rotate :  W ");
     ConsoleHelper::setCursorPosition(p1_x, y++); printf("Left   :  A ");
@@ -33,10 +33,10 @@ void BattleTetris::showControls() {
     ConsoleHelper::setCursorPosition(p1_x, y++); printf("Down   :  S ");
     ConsoleHelper::setCursorPosition(p1_x, y++); printf("Drop   : SPACE");
 
-    // --- ±¸ºĞ¼± ---
+    // --- êµ¬ë¶„ì„  ---
     for (int i = 6; i < 15; i++) {
         ConsoleHelper::setColor(DARK_GRAY);
-        ConsoleHelper::setCursorPosition(37, i); printf("¦­");
+        ConsoleHelper::setCursorPosition(37, i); printf("â”ƒ");
     }
 
     // --- PLAYER 2 (Right) ---
@@ -46,24 +46,24 @@ void BattleTetris::showControls() {
     ConsoleHelper::setCursorPosition(p2_x, y++); printf("[ PLAYER 2 ]");
     ConsoleHelper::setColor(GRAY);
     ConsoleHelper::setCursorPosition(p2_x, y++); printf(" (ARROW KEY)");
-    y++; // °ø¹é
+    y++; // ê³µë°±
     ConsoleHelper::setColor(WHITE);
-    ConsoleHelper::setCursorPosition(p2_x, y++); printf("Rotate :  ¡è ");
-    ConsoleHelper::setCursorPosition(p2_x, y++); printf("Left   :  ¡ç ");
-    ConsoleHelper::setCursorPosition(p2_x, y++); printf("Right  :  ¡æ ");
-    ConsoleHelper::setCursorPosition(p2_x, y++); printf("Down   :  ¡é ");
+    ConsoleHelper::setCursorPosition(p2_x, y++); printf("Rotate :  â†‘ ");
+    ConsoleHelper::setCursorPosition(p2_x, y++); printf("Left   :  â† ");
+    ConsoleHelper::setCursorPosition(p2_x, y++); printf("Right  :  â†’ ");
+    ConsoleHelper::setCursorPosition(p2_x, y++); printf("Down   :  â†“ ");
     ConsoleHelper::setCursorPosition(p2_x, y++); printf("Drop   : ENTER");
 
-    // --- ÇÏ´Ü ¾È³» ---
+    // --- í•˜ë‹¨ ì•ˆë‚´ ---
     ConsoleHelper::setColor(YELLOW);
     ConsoleHelper::setCursorPosition(12, 17);
-    printf("¦±¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦°");
+    printf("â”—â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”›");
 
     ConsoleHelper::setColor(WHITE);
     ConsoleHelper::setCursorPosition(27, 20);
     printf("Press Any Key to FIGHT!");
 
-    // Å° ÀÔ·Â ´ë±â
+    // í‚¤ ì…ë ¥ ëŒ€ê¸°
     while (_kbhit()) _getch();
     _getch();
 
@@ -71,47 +71,44 @@ void BattleTetris::showControls() {
 }
 
 void BattleTetris::run(bool waterMode) {
-    // 1. ÃÊ±âÈ­
     ConsoleHelper::init();
 
-    // 2. ·Î°í È­¸é
-    system("cls");
-    ConsoleHelper::setColor(SKY_BLUE);
-    ConsoleHelper::setCursorPosition(10, 3);
-    printf("        ECO - TETRIS        ");
-
-    ConsoleHelper::setCursorPosition(10, 4);
-    if (waterMode) printf(" 2-PLAYER BATTLE (SEA LEVEL)");
-    else           printf("  2-PLAYER BATTLE (CLASSIC) ");
-
-    ConsoleHelper::setColor(WHITE);
-    ConsoleHelper::setCursorPosition(10, 6);
-    printf("  [ Press Any Key to Start ]");
-
-    // Å° ÀÔ·Â ´ë±â
-    while (_kbhit()) _getch();
-    _getch();
-
-    showControls();
-
-    // 3. °ÔÀÓ È­¸é ÁØºñ
+    // [Rule 7] printf -> std::cout
     system("cls");
     ConsoleHelper::setCursorVisible(false);
 
-    // 4. ÇÃ·¹ÀÌ¾î »ı¼º
+    ConsoleHelper::setColor(SKY_BLUE);
+
+    ConsoleHelper::setCursorPosition(10, 3);
+    std::cout << "ECO - TETRIS";
+    
+  ConsoleHelper::setCursorPosition(10, 4);
+    if (waterMode) {
+        std::cout << "2-PLAYER BATTLE (SEA LEVEL)";
+    }
+    else {
+        std::cout << "2-PLAYER BATTLE (CLASSIC)";
+    }
+
+    ConsoleHelper::setColor(WHITE);
+    ConsoleHelper::setCursorPosition(10, 6);
+    std::cout << "[ Press Any Key to Start ]";
+  
+    showControls();
+
+    // 3. ê²Œì„ í™”ë©´ ì¤€ë¹„
+    system("cls");
+    ConsoleHelper::setCursorVisible(false);
+
     TetrisCore player1(4, 2, waterMode, true);
     TetrisCore player2(50, 2, waterMode, true);
 
     player1.initGame(0);
     player2.initGame(0);
 
-    // P2 ÇÏµåµå·Ó ¹ö±× ¼öÁ¤¿ë ´ë±â
     Sleep(500);
     GetAsyncKeyState(VK_RETURN);
 
-    // ==========================================
-    // [º¯¼ö ¼±¾ğ]
-    // ==========================================
     bool p1_rotate_pressed = false;
     bool p1_drop_pressed = false;
     bool p2_rotate_pressed = false;
@@ -119,50 +116,40 @@ void BattleTetris::run(bool waterMode) {
 
     int p1_move_timer = 0;
     int p2_move_timer = 0;
-    const int MOVE_SPEED = 3;
 
-    // [Ãß°¡] ½Â¸® Á¡¼ö ¸ñÇ¥ ¼³Á¤
-    const int WINNING_SCORE = 300;
+    constexpr int MOVE_SPEED = 3;
+    constexpr int WINNING_SCORE = 1000;
 
     while (true) {
-        // [Step 1] ¹öÆÛ ºñ¿ì±â
         ConsoleHelper::clearBuffer();
 
-        // ==========================================
-        // [Step 2] ½ÂÆĞ ÆÇÁ¤ (»ç¸Á ¶Ç´Â Á¡¼ö ´Ş¼º)
-        // ==========================================
-        int winner = 0; // 0:ÁøÇàÁß, 1:P1½Â¸®, 2:P2½Â¸®
+        int winner = 0;
 
-        // 1. »ó´ë¹æÀÌ Á×¾úÀ» ¶§ ½Â¸®
         if (player1.isGameOver()) winner = 2;
         else if (player2.isGameOver()) winner = 1;
-
-        // 2. [Ãß°¡µÊ] ¸ñÇ¥ Á¡¼ö(1000Á¡) ´Ş¼º ½Ã ½Â¸®
         else if (player1.getScore() >= WINNING_SCORE) winner = 1;
         else if (player2.getScore() >= WINNING_SCORE) winner = 2;
 
         if (winner != 0) {
-            // °á°ú ¹Ú½º Ãâ·Â
-            int boxX = 32;
-            int boxY = 10;
+            int boxX = 42;
+            int boxY = 12;
 
-            ConsoleHelper::write(boxX, boxY++, "¦®¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¯", YELLOW);
-            ConsoleHelper::write(boxX, boxY++, "¦­                  ¦­", YELLOW);
+            ConsoleHelper::write(boxX, boxY++, "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”“", YELLOW);
+            ConsoleHelper::write(boxX, boxY++, "â”ƒ                             â”ƒ", YELLOW);
 
-            if (winner == 1) ConsoleHelper::write(boxX, boxY, "¦­   PLAYER 1 WIN!  ¦­", YELLOW);
-            else             ConsoleHelper::write(boxX, boxY, "¦­   PLAYER 2 WIN!  ¦­", YELLOW);
+            if (winner == 1) ConsoleHelper::write(boxX, boxY, "â”ƒ       PLAYER 1 WIN!       â”ƒ", YELLOW);
+            else             ConsoleHelper::write(boxX, boxY, "â”ƒ       PLAYER 2 WIN!       â”ƒ", YELLOW);
             boxY++;
 
-            ConsoleHelper::write(boxX, boxY++, "¦­                  ¦­", YELLOW);
-            ConsoleHelper::write(boxX, boxY++, "¦±¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦°", YELLOW);
+            ConsoleHelper::write(boxX, boxY++, "â”ƒ                             â”ƒ", YELLOW);
+            ConsoleHelper::write(boxX, boxY++, "â”—â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”›", YELLOW);
 
-            // ½Â¸® »çÀ¯ Ãâ·Â (¼±ÅÃ »çÇ×)
             if (player1.getScore() >= WINNING_SCORE || player2.getScore() >= WINNING_SCORE) {
-                ConsoleHelper::write(boxX + 2, boxY + 1, "SCORE REACHED!", GREEN);
-                ConsoleHelper::write(boxX + 2, boxY + 2, "Press Any Key...", WHITE);
+                ConsoleHelper::write(boxX + 2, boxY + 1, "       SCORE REACHED!      ", GREEN);
+                ConsoleHelper::write(boxX + 2, boxY + 2, "      Press Any Key...     ", WHITE);
             }
             else {
-                ConsoleHelper::write(boxX + 2, boxY + 1, "Press Any Key...", WHITE);
+                ConsoleHelper::write(boxX + 2, boxY + 1, "      Press Any Key...     ", WHITE);
             }
 
             ConsoleHelper::render();
@@ -172,13 +159,10 @@ void BattleTetris::run(bool waterMode) {
             break;
         }
 
-        // ==========================================
-        // [Step 3] Å° ÀÔ·Â Ã³¸®
-        // ==========================================
         if (p1_move_timer > 0) p1_move_timer--;
         if (p2_move_timer > 0) p2_move_timer--;
 
-        // --- [Player 1] ---
+        // P1 Input
         if (GetAsyncKeyState(VK_W) & 0x8000) {
             if (!p1_rotate_pressed) { player1.handleInput(KEY_UP); p1_rotate_pressed = true; }
         }
@@ -197,7 +181,7 @@ void BattleTetris::run(bool waterMode) {
             if (moved) p1_move_timer = MOVE_SPEED;
         }
 
-        // --- [Player 2] ---
+        // P2 Input
         if (GetAsyncKeyState(VK_UP) & 0x8000) {
             if (!p2_rotate_pressed) { player2.handleInput(KEY_UP); p2_rotate_pressed = true; }
         }
@@ -216,28 +200,20 @@ void BattleTetris::run(bool waterMode) {
             if (moved) p2_move_timer = MOVE_SPEED;
         }
 
-        if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) break;
+        if (GetAsyncKeyState(KEY_ESC) & 0x8000) break;
 
-        // ==========================================
-        // [Step 4] ·ÎÁ÷ ¾÷µ¥ÀÌÆ® & ±×¸®±â
-        // ==========================================
         player1.updateLogic();
         player1.draw();
 
         player2.updateLogic();
         player2.draw();
 
-        // °ø°İ ½Ã½ºÅÛ
         int p1_attack = player1.getLinesCleared();
         int p2_attack = player2.getLinesCleared();
         if (p1_attack >= 2) player2.addGarbageLines(p1_attack - 1);
         if (p2_attack >= 2) player1.addGarbageLines(p2_attack - 1);
 
-        // ==========================================
-        // [Step 5] ÃÖÁ¾ ·»´õ¸µ
-        // ==========================================
         ConsoleHelper::render();
-
         Sleep(20);
     }
 }

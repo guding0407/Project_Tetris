@@ -7,9 +7,7 @@ TetrisCore::TetrisCore(int x, int y, bool waterMode, bool isBattle) {
     isWaterMode = waterMode;
     board.setBasePosition(ab_x, ab_y);
 
-    // 난이도 데이터 초기화
     if (isBattle) {
-        // 2인용 (빠른 레벨업)
         stage_data[0] = { 40, 20, 5, 300 };
         stage_data[1] = { 38, 18, 5, 280 };
         stage_data[2] = { 35, 18, 5, 250 };
@@ -22,7 +20,6 @@ TetrisCore::TetrisCore(int x, int y, bool waterMode, bool isBattle) {
         stage_data[9] = { 4, 11, 99999, 80 };
     }
     else {
-        // 1인용 (기본)
         stage_data[0] = { 40, 20, 20, 300 };
         stage_data[1] = { 38, 18, 20, 280 };
         stage_data[2] = { 35, 18, 20, 250 };
@@ -72,7 +69,6 @@ void TetrisCore::draw() {
 void TetrisCore::updateLogic() {
     if (is_gameover) return;
 
-    // 해수면 모드 로직
     if (isWaterMode) {
         water_tick_count++;
         if (water_tick_count >= stage_data[level].water_speed) {
@@ -80,18 +76,18 @@ void TetrisCore::updateLogic() {
             if (board.getWaterHeight() >= 18) {
                 is_gameover = true;
             }
-            else {
+            else if (board.getWaterHeight() < 10) {
                 board.raiseWaterLevel();
                 draw();
             }
         }
     }
 
-    // 블록 자동 낙하 로직
     speed_counter++;
     if (speed_counter >= stage_data[level].speed) {
         speed_counter = 0;
-        int result = moveBlock(&block_shape, &block_angle, &block_x, &block_y, &next_block_shape);
+        // [Rule 1] 참조자 사용 (주소 연산자 & 제거)
+        int result = moveBlock(block_shape, block_angle, block_x, block_y, next_block_shape);
         if (result == 1) is_gameover = true;
         showCurBlock(block_shape, block_angle, block_x, block_y);
     }
@@ -149,13 +145,15 @@ bool TetrisCore::handleInput(int key) {
         break;
     case KEY_DOWN:
     {
-        int result = moveBlock(&block_shape, &block_angle, &block_x, &block_y, &next_block_shape);
+        // [Rule 1] 참조자 사용 (주소 연산자 & 제거)
+        int result = moveBlock(block_shape, block_angle, block_x, block_y, next_block_shape);
         if (result == 1) is_gameover = true;
         acted = true;
         break;
     }
     case KEY_SPACE:
-        while (moveBlock(&block_shape, &block_angle, &block_x, &block_y, &next_block_shape) == 0);
+        // [Rule 1] 참조자 사용 (주소 연산자 & 제거)
+        while (moveBlock(block_shape, block_angle, block_x, block_y, next_block_shape) == 0);
         acted = true;
         break;
     }
@@ -173,7 +171,13 @@ void TetrisCore::checkFullLine() {
     int cleared = board.deleteFullLines(ab_x, ab_y);
     if (cleared > 0) {
         lines += cleared;
-        score += 100 + (level * 10);
+
+        // [수정] 콤보 보너스 제거 -> 단순 비례 계산으로 변경
+        
+        // 최종 점수: 기본 점수 * 지운 줄 수
+        int unitScore = 100;
+        score += (unitScore * cleared);
+
         clearedLineCount += cleared;
 
         if (isWaterMode) {
@@ -188,7 +192,6 @@ void TetrisCore::checkFullLine() {
         draw();
     }
 }
-
 void TetrisCore::showGameStat() {
     int uiX = ab_x + 30;
     int uiY = ab_y + 2;
@@ -196,8 +199,9 @@ void TetrisCore::showGameStat() {
     ConsoleHelper::write(uiX, uiY, "NEXT", WHITE);
     ConsoleHelper::write(uiX, uiY + 5, "LV: ", WHITE);
     ConsoleHelper::writeInt(uiX + 4, uiY + 5, level + 1, WHITE);
-    ConsoleHelper::write(uiX, uiY + 7, "SC: ", WHITE);
-    ConsoleHelper::writeInt(uiX + 4, uiY + 7, score, WHITE);
+
+    ConsoleHelper::write(uiX, uiY + 7, "SCORE: ", WHITE);
+    ConsoleHelper::writeInt(uiX + 7, uiY + 7, score, WHITE);
 
     int remainLines = stage_data[level].clear_line - lines;
     if (remainLines < 0) remainLines = 0;
@@ -209,10 +213,8 @@ void TetrisCore::showNextBlock(int shape) {
     int uiX = ab_x + 30;
     int uiY = ab_y + 1;
 
-    // 지우기 (표준 공백 8칸)
     for (int i = 0; i < 4; i++) ConsoleHelper::write(uiX, uiY + i, "        ", BLACK);
 
-    // 그리기 (네모 문자)
     for (int r = 0; r < 4; r++) {
         for (int c = 0; c < 4; c++) {
             if (TetrisBlock::getShape(shape, 0, r, c)) {
@@ -246,7 +248,6 @@ void TetrisCore::eraseCurBlock(int shape, int angle, int x, int y) {
                 ConsoleHelper::write((c + x) * 2 + ab_x, gy + ab_y, "■", WATER_COLOR);
             }
             else {
-                // 표준 공백 2칸
                 ConsoleHelper::write((c + x) * 2 + ab_x, gy + ab_y, "  ", BLACK);
             }
         }
@@ -254,17 +255,17 @@ void TetrisCore::eraseCurBlock(int shape, int angle, int x, int y) {
 }
 
 int TetrisCore::strikeCheck(int shape, int angle, int x, int y) {
+    // getShapeMask 대신 기존 getShape 사용
     for (int r = 0; r < 4; r++) {
         for (int c = 0; c < 4; c++) {
             if (!TetrisBlock::getShape(shape, angle, r, c)) continue;
             int gy = y + r;
             int gx = x + c;
 
-            if (gx <= 0 || gx >= 13) return 1; // 벽
+            if (gx <= 0 || gx >= 13) return 1;
             if (gy < 0) continue;
-            if (gy >= 21) return 1; // 바닥
+            if (gy >= 21) return 1;
 
-            // 보드판 블록 충돌
             if (board.getBlock(gy, gx) != EMPTY_BLOCK) return 1;
         }
     }
@@ -283,23 +284,25 @@ void TetrisCore::mergeBlock(int shape, int angle, int x, int y) {
     board.drawBoard(level);
 }
 
-int TetrisCore::moveBlock(int* shape, int* angle, int* x, int* y, int* next_shape) {
-    eraseCurBlock(*shape, *angle, *x, *y);
-    (*y)++;
+// [Rule 1] 인자 타입 int&로 변경
+int TetrisCore::moveBlock(int& shape, int& angle, int& x, int& y, int& next_shape) {
+    // [Rule 1] 포인터 역참조(*) 제거
+    eraseCurBlock(shape, angle, x, y);
+    y++;
 
-    if (strikeCheck(*shape, *angle, *x, *y)) {
-        (*y)--;
-        if (*y < 0) return 1; // 게임 오버
+    if (strikeCheck(shape, angle, x, y)) {
+        y--;
+        if (y < 0) return 1;
 
-        mergeBlock(*shape, *angle, *x, *y);
-        *shape = *next_shape;
-        *next_shape = makeNewBlock();
+        mergeBlock(shape, angle, x, y);
+        shape = next_shape;
+        next_shape = makeNewBlock();
 
-        *x = 5;
-        *y = -3;
-        *angle = 0;
+        x = 5;
+        y = -3;
+        angle = 0;
 
-        showNextBlock(*next_shape);
+        showNextBlock(next_shape);
         return 2;
     }
     return 0;

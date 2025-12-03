@@ -3,7 +3,6 @@
 #include "TetrisBoard.h"
 #include "TetrisBlock.h"
 
-// 테트리스 게임의 한 '판'을 담당하는 핵심 클래스
 class TetrisCore {
 protected:
     TetrisBoard board;
@@ -11,10 +10,10 @@ protected:
 
     int level;
     int score;
-    int lines; // 현재까지 지운 라인 수
-    int clearedLineCount; // 이번 턴에 지운 라인 수 (공격용)
+    int lines;
+    int clearedLineCount;
 
-    int ab_x, ab_y; // 보드 기준 좌표
+    int ab_x, ab_y;
     int water_tick_count;
     bool isWaterMode;
 
@@ -23,7 +22,7 @@ protected:
     int block_x;
     int block_y;
     int next_block_shape;
-    int speed_counter; // 속도 조절용
+    int speed_counter;
 
     bool is_gameover;
 
@@ -31,16 +30,12 @@ public:
     TetrisCore(int x, int y, bool waterMode, bool isBattle = false);
 
     void setLevel(int l) { level = l; }
-
     void initGame(int startLevel = 0);
-    void draw(); // 전체 그리기
-    void updateLogic(); // 게임 로직 진행 (자동 낙하 등)
-    bool handleInput(int key); // 키 입력 처리 (성공시 true)
-
-    // 공격받았을 때 줄 추가 (2인용 전용)
+    void draw();
+    void updateLogic();
+    bool handleInput(int key);
     void addGarbageLines(int count);
 
-    // 상태 확인용 Getter
     int getLinesCleared() { int t = clearedLineCount; clearedLineCount = 0; return t; }
     bool isGameOver() const { return is_gameover; }
     int getScore() const { return score; }
@@ -54,6 +49,9 @@ protected:
 
     int strikeCheck(int shape, int angle, int x, int y);
     void mergeBlock(int shape, int angle, int x, int y);
-    int moveBlock(int* shape, int* angle, int* x, int* y, int* next_shape);
+
+    // [Rule 1] 포인터(*) -> 참조자(&)로 변경
+    int moveBlock(int& shape, int& angle, int& x, int& y, int& next_shape);
+
     void checkFullLine();
 };

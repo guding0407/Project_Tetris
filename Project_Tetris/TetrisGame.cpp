@@ -14,16 +14,17 @@ void TetrisGame::showLogo() {
     system("cls");
     ConsoleHelper::setCursorVisible(false);
     ConsoleHelper::setColor(SKY_BLUE);
-    ConsoleHelper::setCursorPosition(10, 3);
-    printf("        ECO - TETRIS        \n");
 
+    ConsoleHelper::setCursorPosition(10, 3);
+    std::cout << "        ECO - TETRIS        ";
+  
     ConsoleHelper::setCursorPosition(10, 4);
-    if (isWaterMode) printf("  SINGLE PLAYER (SEA LEVEL)");
-    else            printf("   SINGLE PLAYER (CLASSIC)");
+    if (isWaterMode) std::cout << "  SINGLE PLAYER (SEA LEVEL) ";
+    else            std::cout << "   SINGLE PLAYER (CLASSIC)  ";
 
     ConsoleHelper::setCursorPosition(10, 6);
     ConsoleHelper::setColor(WHITE);
-    printf("  [ Press Any Key to Start ]");
+    std::cout << "  [ Press Any Key to Start ]\n";
 
     while (_kbhit()) _getch();
     _getch();
@@ -34,18 +35,18 @@ void TetrisGame::showLogo() {
 void TetrisGame::inputData() {
     ConsoleHelper::setColor(GRAY);
     int x = 10, y = 7;
-    ConsoleHelper::setCursorPosition(x, y++); printf("¶Æ¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨<GAME KEY>¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶Ø");
-    ConsoleHelper::setCursorPosition(x, y++); printf("¶≠ UP   : Rotate Block        ¶≠");
-    ConsoleHelper::setCursorPosition(x, y++); printf("¶≠ DOWN : Move One-Step Down  ¶≠");
-    ConsoleHelper::setCursorPosition(x, y++); printf("¶≠ SPACE: Hard Drop           ¶≠");
-    ConsoleHelper::setCursorPosition(x, y++); printf("¶≠ LEFT : Move Left           ¶≠");
-    ConsoleHelper::setCursorPosition(x, y++); printf("¶≠ RIGHT: Move Right          ¶≠");
-    ConsoleHelper::setCursorPosition(x, y++); printf("¶±¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶∞");
+    ConsoleHelper::setCursorPosition(x, y++); std::cout << "‚îè‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ<GAME KEY>‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îì";
+    ConsoleHelper::setCursorPosition(x, y++); std::cout << "‚îÉ UP   : Rotate Block        ‚îÉ";
+    ConsoleHelper::setCursorPosition(x, y++); std::cout << "‚îÉ DOWN : Move One-Step Down  ‚îÉ";
+    ConsoleHelper::setCursorPosition(x, y++); std::cout << "‚îÉ SPACE: Hard Drop           ‚îÉ";
+    ConsoleHelper::setCursorPosition(x, y++); std::cout << "‚îÉ LEFT : Move Left           ‚îÉ";
+    ConsoleHelper::setCursorPosition(x, y++); std::cout << "‚îÉ RIGHT: Move Right          ‚îÉ";
+    ConsoleHelper::setCursorPosition(x, y++); std::cout << "‚îó‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îõ";
 
     while (1) {
         ConsoleHelper::setCursorPosition(10, 3);
         ConsoleHelper::setColor(WHITE);
-        printf("Select Start level[1-8]:          ");
+        std::cout << "Select Start level[1-8]:          ";
         ConsoleHelper::setCursorPosition(35, 3);
 
         char buf[10];
@@ -64,9 +65,7 @@ void TetrisGame::run() {
     showLogo();
 
     while (1) {
-        // [ºˆ¡§ 1] ∞‘¿” ¿ÁΩ√¿€ Ω√ »≠∏È¿ª ±˙≤˝«œ∞‘ ¡ˆøÚ (∞„ƒß πÊ¡ˆ)
         system("cls");
-
         inputData();
 
         ConsoleHelper::init();
@@ -102,20 +101,21 @@ void TetrisGame::run() {
             Sleep(20);
         }
 
-        // [ºˆ¡§ 2] ∞‘¿” ø¿πˆ Ω√ ±Ú≤˚«— π⁄Ω∫ √‚∑¬
-        int boxX = 15;
-        int boxY = 10;
-        ConsoleHelper::write(boxX, boxY++, "¶Æ¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶Ø", RED);
-        ConsoleHelper::write(boxX, boxY++, "¶≠                              ¶≠", RED);
-        ConsoleHelper::write(boxX, boxY++, "¶≠          GAME OVER           ¶≠", RED);
-        ConsoleHelper::write(boxX, boxY++, "¶≠                              ¶≠", RED);
-        ConsoleHelper::write(boxX, boxY++, "¶≠      Press Any Key...        ¶≠", RED);
-        ConsoleHelper::write(boxX, boxY++, "¶≠                              ¶≠", RED);
-        ConsoleHelper::write(boxX, boxY++, "¶±¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶¨¶∞", RED);
+        // Í≤åÏûÑ Ïò§Î≤Ñ Ï≤òÎ¶¨
+        int boxX = 45;
+        int boxY = 16;
 
-        ConsoleHelper::render(); // π⁄Ω∫ √‚∑¬
+        ConsoleHelper::write(boxX, boxY++, "‚îè‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îì", RED);
+        ConsoleHelper::write(boxX, boxY++, "‚îÉ                              ‚îÉ", RED);
+        ConsoleHelper::write(boxX, boxY, "‚îÉ          GAME OVER           ‚îÉ", RED); boxY++;
+        ConsoleHelper::write(boxX, boxY++, "‚îÉ                              ‚îÉ", RED);
+        ConsoleHelper::write(boxX, boxY, "‚îÉ      Press Any Key...        ‚îÉ", WHITE); boxY++;
+        ConsoleHelper::write(boxX, boxY++, "‚îÉ                              ‚îÉ", RED);
+        ConsoleHelper::write(boxX, boxY++, "‚îó‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îÅ‚îõ", RED);
 
-        while (_kbhit()) _getch(); // ≈∞ πˆ∆€ ∫ÒøÏ±‚
-        _getch(); // ≈∞ ¿‘∑¬ ¥Î±‚
+        ConsoleHelper::render();
+
+        while (_kbhit()) _getch();
+        _getch();
     }
 }
