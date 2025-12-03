@@ -36,4 +36,5 @@ public:
     static void setCursorVisible(bool visible);
     static void setCursorPosition(int x, int y);
     static void setColor(int color);
+    static void recover();
 };

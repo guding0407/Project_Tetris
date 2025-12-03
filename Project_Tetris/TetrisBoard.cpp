@@ -98,7 +98,6 @@ int TetrisBoard::deleteFullLines(int ab_x, int ab_y) {
     int checkLimit = 20 - waterHeight;
 
     for (int i = 0; i < checkLimit; i++) {
-        // 바닥(20)은 검사하지 않음
         if (i >= 20) continue;
 
         int j;
@@ -110,21 +109,27 @@ int TetrisBoard::deleteFullLines(int ab_x, int ab_y) {
         if (j == 13) {
             linesCleared++;
 
-            // [수정 1] 이펙트를 "==" 대신 "■"로 변경하여 버퍼 구조 통일
+            // [핵심 수정 1] 애니메이션 시작 전에 배경(현재 화면)을 복구!
+            // 이걸 안 하면 빈 화면에서 파란 블록만 깜빡거립니다.
+            ConsoleHelper::recover();
+
+            // 1. 라인 삭제 이펙트 (파란색)
             for (int k = 1; k < 13; k++) {
                 ConsoleHelper::write((k * 2) + ab_x, i + ab_y, "■", SKY_BLUE);
-                ConsoleHelper::render();
+                ConsoleHelper::render(); // 이제 배경이 있는 상태에서 이펙트만 그려짐
                 Sleep(10);
             }
 
-            // [수정 2] 이펙트 지우기 및 ★즉시 렌더링★ 추가
-            // 화면을 깨끗한 검은색으로 밀어버려야 잔상이 남지 않습니다.
+            // [핵심 수정 2] 이펙트 지우기 
+            // write로 지우고 바로 render하지 말고, 
+            // recover()로 다시 배경을 불러온 뒤 해당 줄만 지우는 것이 더 안전합니다.
+            // 하지만 간단하게 공백으로 덮고 render해도 됩니다.
             for (int k = 1; k < 13; k++) {
                 ConsoleHelper::write((k * 2) + ab_x, i + ab_y, "  ", BLACK);
             }
-            ConsoleHelper::render(); // [중요] 지운 것을 화면에 즉시 반영
+            ConsoleHelper::render();
 
-            // 3. 데이터 이동
+            // 3. 데이터 이동 (기존 로직 유지)
             for (int k = i; k > 0; k--) {
                 for (int col = 1; col < 13; col++)
                     total_block[k][col] = total_block[k - 1][col];
