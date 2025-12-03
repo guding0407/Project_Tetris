@@ -40,7 +40,7 @@ public:
         int timer = 0;
 
         // 애니메이션 좌표 (화면 하단)
-        int animX[4] = { 10, 20, 30, 40 }; // 블록 4개의 X 좌표 (Grid 기준)
+        int animX[4] = { 8, 16, 24, 32 }; // 블록 4개의 X 좌표 (Grid 기준)
         int animY = 22;                    // 블록 Y 좌표
 
         // 키 버퍼 비우기 (입력 밀림 방지)
@@ -53,7 +53,7 @@ public:
             }
 
             // 2. 애니메이션 업데이트 (일정 시간마다)
-            if (timer % 30 == 0) { // 속도 조절
+            if (timer % 60 == 0) { // 속도 조절
                 for (int i = 0; i < 4; i++) {
                     // 기존 블록 지우기
                     clearBlockArea(animX[i], animY);
@@ -112,7 +112,7 @@ int main() {
         ConsoleHelper::setCursorPosition(25, 14); printf("[5] EXIT");
 
         ConsoleHelper::setColor(GRAY);
-        ConsoleHelper::setCursorPosition(15, 27); printf("Use Number Keys (1-5) to Select.");
+        ConsoleHelper::setCursorPosition(25, 27); printf("Use Number Keys (1-5) to Select.");
 
         // --- 애니메이션 재생 및 입력 대기 ---
         char choice = MenuEffect::waitForInputWithAnimation();
