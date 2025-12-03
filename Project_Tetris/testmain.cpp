@@ -87,9 +87,9 @@ int main() {
         // --- 로고 그리기 (cout 사용) ---
         ConsoleHelper::setColor(SKY_BLUE);
 
-        ConsoleHelper::setCursorPosition(25, 5);  printf("====================================");
-        ConsoleHelper::setCursorPosition(25, 6);  printf("       TETRIS PROJECT LAUNCHER      ");
-        ConsoleHelper::setCursorPosition(25, 7);  printf("====================================");
+        ConsoleHelper::setCursorPosition(25, 5);  std::cout << "====================================";
+        ConsoleHelper::setCursorPosition(25, 6);  std::cout << "       TETRIS PROJECT LAUNCHER      ";
+        ConsoleHelper::setCursorPosition(25, 7);  std::cout << "====================================";
 
 
         // --- 메뉴 그리기 ---

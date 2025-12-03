@@ -26,16 +26,16 @@ void BattleTetris::showControls() {
     int p1_x = 15;
     int y = 6;
     ConsoleHelper::setColor(SKY_BLUE);
-    ConsoleHelper::setCursorPosition(p1_x, y++); printf("[ PLAYER 1 ]");
+    ConsoleHelper::setCursorPosition(p1_x, y++); cout << "[ PLAYER 1 ]";
     ConsoleHelper::setColor(GRAY);
-    ConsoleHelper::setCursorPosition(p1_x, y++); printf("  (WASD)    ");
+    ConsoleHelper::setCursorPosition(p1_x, y++); cout << "  (WASD)    ";
     y++; // 공백
     ConsoleHelper::setColor(WHITE);
-    ConsoleHelper::setCursorPosition(p1_x, y++); printf("Rotate :  W ");
-    ConsoleHelper::setCursorPosition(p1_x, y++); printf("Left   :  A ");
-    ConsoleHelper::setCursorPosition(p1_x, y++); printf("Right  :  D ");
-    ConsoleHelper::setCursorPosition(p1_x, y++); printf("Down   :  S ");
-    ConsoleHelper::setCursorPosition(p1_x, y++); printf("Drop   : SPACE");
+    ConsoleHelper::setCursorPosition(p1_x, y++); cout << "Rotate :  W ";
+    ConsoleHelper::setCursorPosition(p1_x, y++); cout << "Left   :  A ";
+    ConsoleHelper::setCursorPosition(p1_x, y++); cout << "Right  :  D ";
+    ConsoleHelper::setCursorPosition(p1_x, y++); cout << "Down   :  S ";
+    ConsoleHelper::setCursorPosition(p1_x, y++); cout << "Drop   : SPACE";
 
     // --- 구분선 ---
     for (int i = 6; i < 15; i++) {
