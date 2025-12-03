@@ -9,14 +9,19 @@
 
 using namespace std;
 
-// 키보드 값 상수
-#define KEY_LEFT    0x4b
-#define KEY_RIGHT   0x4d
-#define KEY_UP      0x48
-#define KEY_DOWN    0x50
-#define KEY_SPACE   32
-#define KEY_ENTER   13
-#define KEY_ESC     27
+// [Rule 2] #define -> constexpr (컴파일 타임 상수)
+constexpr int KEY_LEFT = 0x4b;
+constexpr int KEY_RIGHT = 0x4d;
+constexpr int KEY_UP = 0x48;
+constexpr int KEY_DOWN = 0x50;
+constexpr int KEY_SPACE = 32;
+constexpr int KEY_ENTER = 13;
+constexpr int KEY_ESC = 27;
+
+// 블럭 상태 상수
+constexpr int EMPTY_BLOCK = 0;
+constexpr int WALL_BLOCK = 1;
+constexpr int WATER_BLOCK = 9;
 
 // 색상 열거형
 enum Color {
@@ -25,14 +30,8 @@ enum Color {
     DARK_GRAY, BLUE, GREEN, SKY_BLUE,
     RED, VOILET, YELLOW, WHITE,
 
-    // [Design] 물 색상 (파랑)
     WATER_COLOR = BLUE
 };
-
-// 블럭 상태 상수
-#define EMPTY_BLOCK 0
-#define WALL_BLOCK 1
-#define WATER_BLOCK 9 
 
 // 난이도 데이터
 struct Stage {
