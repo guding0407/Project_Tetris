@@ -2,71 +2,71 @@
 #include "BattleTetris.h"
 #include "ConsoleHelper.h"
 #include "TetrisBlock.h" 
-#include "Common.h"      // [Áß¿ä] KEY_ESC, ±¸Ã¼ÀûÀÎ Å° ÄÚµå, Ç¥ÁØ ¶óÀÌºê·¯¸®¸¦ À§ÇØ ÇÊ¼ö
+#include "Common.h"      // [ì¤‘ìš”] KEY_ESC, êµ¬ì²´ì ì¸ í‚¤ ì½”ë“œ, í‘œì¤€ ë¼ì´ë¸ŒëŸ¬ë¦¬ë¥¼ ìœ„í•´ í•„ìˆ˜
 #include <conio.h>       // _kbhit, _getch
 #include <windows.h>     // Sleep
 #include <time.h>        // time
 #include <stdlib.h>      // rand, srand
 #include <stdio.h>       // printf
 
-// [Ãß°¡] ¸ŞÀÎ È­¸é ¾Ö´Ï¸ŞÀÌ¼Ç È¿°ú¸¦ ´ã´çÇÏ´Â Å¬·¡½º
+// [ì¶”ê°€] ë©”ì¸ í™”ë©´ ì• ë‹ˆë©”ì´ì…˜ íš¨ê³¼ë¥¼ ë‹´ë‹¹í•˜ëŠ” í´ë˜ìŠ¤
 class MenuEffect {
 public:
-    // Æ¯Á¤ À§Ä¡¿¡ ºí·Ï ÇÏ³ª¸¦ ±×¸®´Â ÇÔ¼ö
+    // íŠ¹ì • ìœ„ì¹˜ì— ë¸”ë¡ í•˜ë‚˜ë¥¼ ê·¸ë¦¬ëŠ” í•¨ìˆ˜
     static void drawBlockAt(int x, int y, int shape, int angle) {
         ConsoleHelper::setColor(TetrisBlock::getColor(shape));
         for (int r = 0; r < 4; r++) {
             for (int c = 0; c < 4; c++) {
                 if (TetrisBlock::getShape(shape, angle, r, c)) {
-                    // xÁÂÇ¥¿¡ *2¸¦ ÇÏ¿© °¡·Î ºñÀ² ¸ÂÃã
+                    // xì¢Œí‘œì— *2ë¥¼ í•˜ì—¬ ê°€ë¡œ ë¹„ìœ¨ ë§ì¶¤
                     ConsoleHelper::setCursorPosition((x + c) * 2, y + r);
-                    printf("¡á");
+                    printf("â– ");
                 }
             }
         }
     }
 
-    // ºí·ÏÀÌ ±×·ÁÁú ¿µ¿ªÀ» Áö¿ì´Â ÇÔ¼ö
+    // ë¸”ë¡ì´ ê·¸ë ¤ì§ˆ ì˜ì—­ì„ ì§€ìš°ëŠ” í•¨ìˆ˜
     static void clearBlockArea(int x, int y) {
         ConsoleHelper::setColor(BLACK);
         for (int r = 0; r < 4; r++) {
             ConsoleHelper::setCursorPosition(x * 2, y + r);
-            printf("        "); // °ø¹é 8Ä­
+            printf("        "); // ê³µë°± 8ì¹¸
         }
     }
 
-    // ¾Ö´Ï¸ŞÀÌ¼ÇÀ» º¸¿©ÁÖ¸ç Å° ÀÔ·ÂÀ» ±â´Ù¸®´Â ÇÔ¼ö
+    // ì• ë‹ˆë©”ì´ì…˜ì„ ë³´ì—¬ì£¼ë©° í‚¤ ì…ë ¥ì„ ê¸°ë‹¤ë¦¬ëŠ” í•¨ìˆ˜
     static char waitForInputWithAnimation() {
         int timer = 0;
 
-        // ¾Ö´Ï¸ŞÀÌ¼Ç ÁÂÇ¥ (È­¸é ÇÏ´Ü)
-        int animX[4] = { 8, 16, 24, 32 }; // ºí·Ï 4°³ÀÇ X ÁÂÇ¥ (Grid ±âÁØ)
-        int animY = 22;                    // ºí·Ï Y ÁÂÇ¥
+        // ì• ë‹ˆë©”ì´ì…˜ ì¢Œí‘œ (í™”ë©´ í•˜ë‹¨)
+        int animX[4] = { 8, 16, 24, 32 }; // ë¸”ë¡ 4ê°œì˜ X ì¢Œí‘œ (Grid ê¸°ì¤€)
+        int animY = 22;                    // ë¸”ë¡ Y ì¢Œí‘œ
 
-        // Å° ¹öÆÛ ºñ¿ì±â (ÀÔ·Â ¹Ğ¸² ¹æÁö)
+        // í‚¤ ë²„í¼ ë¹„ìš°ê¸° (ì…ë ¥ ë°€ë¦¼ ë°©ì§€)
         while (_kbhit()) _getch();
 
         while (true) {
-            // 1. Å° ÀÔ·Â È®ÀÎ (ÀÔ·ÂÀÌ ÀÖÀ¸¸é Áï½Ã ¸®ÅÏ)
+            // 1. í‚¤ ì…ë ¥ í™•ì¸ (ì…ë ¥ì´ ìˆìœ¼ë©´ ì¦‰ì‹œ ë¦¬í„´)
             if (_kbhit()) {
                 return _getch();
             }
 
-            // 2. ¾Ö´Ï¸ŞÀÌ¼Ç ¾÷µ¥ÀÌÆ® (ÀÏÁ¤ ½Ã°£¸¶´Ù)
-            if (timer % 60 == 0) { // ¼Óµµ Á¶Àı
+            // 2. ì• ë‹ˆë©”ì´ì…˜ ì—…ë°ì´íŠ¸ (ì¼ì • ì‹œê°„ë§ˆë‹¤)
+            if (timer % 60 == 0) { // ì†ë„ ì¡°ì ˆ
                 for (int i = 0; i < 4; i++) {
-                    // ±âÁ¸ ºí·Ï Áö¿ì±â
+                    // ê¸°ì¡´ ë¸”ë¡ ì§€ìš°ê¸°
                     clearBlockArea(animX[i], animY);
 
-                    // ·£´ı ¸ğ¾ç ¹× °¢µµ
+                    // ëœë¤ ëª¨ì–‘ ë° ê°ë„
                     int shape = rand() % 7;
                     int angle = rand() % 4;
 
-                    // »õ ºí·Ï ±×¸®±â
+                    // ìƒˆ ë¸”ë¡ ê·¸ë¦¬ê¸°
                     drawBlockAt(animX[i], animY, shape, angle);
                 }
 
-                // ¾È³» ¹®±¸ ±ôºıÀÓ È¿°ú
+                // ì•ˆë‚´ ë¬¸êµ¬ ê¹œë¹¡ì„ íš¨ê³¼
                 if ((timer / 30) % 2 == 0) {
                     ConsoleHelper::setColor(WHITE);
                     ConsoleHelper::setCursorPosition(25, 17); printf(">> SELECT OPTION: ");
@@ -77,33 +77,39 @@ public:
                 }
             }
 
-            Sleep(10); // CPU °úºÎÇÏ ¹æÁö
+            Sleep(10); // CPU ê³¼ë¶€í•˜ ë°©ì§€
             timer++;
         }
     }
 };
 
 int main() {
-    // ÄÜ¼Ö Ã¢ Å©±â ¼³Á¤
+
+    // ì½˜ì†” ì°½ í¬ê¸° ì„¤ì •
     system("mode con:cols=100 lines=35");
+
+    
+    system("mode con:cols=120 lines=40");
+
     system("title Tetris Project");
 
-    // Ä¿¼­ ¼û±â±â
+    // ì»¤ì„œ ìˆ¨ê¸°ê¸°
     ConsoleHelper::setCursorVisible(false);
 
-    // ·£´ı ½Ãµå ÃÊ±âÈ­
+    // ëœë¤ ì‹œë“œ ì´ˆê¸°í™”
     srand((unsigned)time(NULL));
 
     while (true) {
+        
         system("cls");
 
-        // --- ·Î°í ±×¸®±â ---
+        // --- ë¡œê³  ê·¸ë¦¬ê¸° ---
         ConsoleHelper::setColor(SKY_BLUE);
         ConsoleHelper::setCursorPosition(20, 5);  printf("====================================");
         ConsoleHelper::setCursorPosition(20, 6);  printf("       TETRIS PROJECT LAUNCHER      ");
         ConsoleHelper::setCursorPosition(20, 7);  printf("====================================");
 
-        // --- ¸Ş´º ±×¸®±â ---
+        // --- ë©”ë‰´ ê·¸ë¦¬ê¸° ---
         ConsoleHelper::setColor(WHITE);
         ConsoleHelper::setCursorPosition(25, 10); printf("[1] SINGLE PLAYER (CLASSIC)");
         ConsoleHelper::setCursorPosition(25, 11); printf("[2] SINGLE PLAYER (SEA LEVEL MODE)");
@@ -114,10 +120,10 @@ int main() {
         ConsoleHelper::setColor(GRAY);
         ConsoleHelper::setCursorPosition(25, 27); printf("Use Number Keys (1-5) to Select.");
 
-        // --- ¾Ö´Ï¸ŞÀÌ¼Ç Àç»ı ¹× ÀÔ·Â ´ë±â ---
+        // --- ì• ë‹ˆë©”ì´ì…˜ ì¬ìƒ ë° ì…ë ¥ ëŒ€ê¸° ---
         char choice = MenuEffect::waitForInputWithAnimation();
 
-        // --- ¼±ÅÃ Ã³¸® ---
+        // --- ì„ íƒ ì²˜ë¦¬ ---
         if (choice == '1') {
             TetrisGame game(false);
             game.run();

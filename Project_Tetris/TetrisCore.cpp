@@ -1,32 +1,44 @@
-#include "TetrisCore.h"
+ï»¿#include "TetrisCore.h"
 #include "ConsoleHelper.h"
 
 TetrisCore::TetrisCore(int x, int y, bool waterMode, bool isBattle) {
-    
     ab_x = x;
     ab_y = y;
     isWaterMode = waterMode;
     board.setBasePosition(ab_x, ab_y);
 
-    // ³­ÀÌµµ µ¥ÀÌÅÍ (±âÁ¸ À¯Áö)
-    stage_data[0] = { 40, 20, 1, 300 };
-    stage_data[1] = { 38, 18, 1, 280 };
-    stage_data[2] = { 35, 18, 20, 250 };
-    stage_data[3] = { 30, 17, 20, 220 };
-    stage_data[4] = { 25, 16, 20, 200 };
-    stage_data[5] = { 20, 14, 20, 180 };
-    stage_data[6] = { 15, 14, 20, 160 };
-    stage_data[7] = { 10, 13, 20, 140 };
-    stage_data[8] = { 6, 12, 20, 120 };
-    stage_data[9] = { 4, 11, 99999, 80 };
+    // ë‚œì´ë„ ë°ì´í„° ì´ˆê¸°í™”
+    if (isBattle) {
+        // 2ì¸ìš© (ë¹ ë¥¸ ë ˆë²¨ì—…)
+        stage_data[0] = { 40, 20, 5, 300 };
+        stage_data[1] = { 38, 18, 5, 280 };
+        stage_data[2] = { 35, 18, 5, 250 };
+        stage_data[3] = { 30, 17, 5, 220 };
+        stage_data[4] = { 25, 16, 5, 200 };
+        stage_data[5] = { 20, 14, 5, 180 };
+        stage_data[6] = { 15, 14, 5, 160 };
+        stage_data[7] = { 10, 13, 5, 140 };
+        stage_data[8] = { 6, 12, 5, 120 };
+        stage_data[9] = { 4, 11, 99999, 80 };
+    }
+    else {
+        // 1ì¸ìš© (ê¸°ë³¸)
+        stage_data[0] = { 40, 20, 20, 300 };
+        stage_data[1] = { 38, 18, 20, 280 };
+        stage_data[2] = { 35, 18, 20, 250 };
+        stage_data[3] = { 30, 17, 20, 220 };
+        stage_data[4] = { 25, 16, 20, 200 };
+        stage_data[5] = { 20, 14, 20, 180 };
+        stage_data[6] = { 15, 14, 20, 160 };
+        stage_data[7] = { 10, 13, 20, 140 };
+        stage_data[8] = { 6, 12, 20, 120 };
+        stage_data[9] = { 4, 11, 99999, 80 };
+    }
 }
 
 void TetrisCore::initGame(int startLevel) {
     board.initBoard();
-
-    // [º¯°æ] ¹«Á¶°Ç 0ÀÌ ¾Æ´Ï¶ó, Àü´Þ¹ÞÀº ·¹º§·Î ¼³Á¤
     level = startLevel;
-
     lines = 0;
     score = 0;
     water_tick_count = 0;
@@ -41,7 +53,7 @@ void TetrisCore::initGame(int startLevel) {
     block_y = -3;
     block_angle = 0;
 
-    draw(); // ¿©±â¼­ ¹Ù²ï ·¹º§ »ö»óÀ¸·Î º®À» ±×¸³´Ï´Ù.
+    draw();
 }
 
 int TetrisCore::makeNewBlock() {
@@ -57,11 +69,10 @@ void TetrisCore::draw() {
     showCurBlock(block_shape, block_angle, block_x, block_y);
 }
 
-// 1ÇÁ·¹ÀÓ ·ÎÁ÷ (·çÇÁ ¾È¿¡¼­ È£ÃâµÊ)
 void TetrisCore::updateLogic() {
     if (is_gameover) return;
 
-    // ÇØ¼ö¸é ¸ðµå ·ÎÁ÷
+    // í•´ìˆ˜ë©´ ëª¨ë“œ ë¡œì§
     if (isWaterMode) {
         water_tick_count++;
         if (water_tick_count >= stage_data[level].water_speed) {
@@ -71,12 +82,12 @@ void TetrisCore::updateLogic() {
             }
             else {
                 board.raiseWaterLevel();
-                draw(); // º¯È­°¡ ÀÖÀ» ¶§ ´Ù½Ã ±×¸®±â
+                draw();
             }
         }
     }
 
-    // ºí·Ï ÀÚµ¿ ³«ÇÏ ·ÎÁ÷
+    // ë¸”ë¡ ìžë™ ë‚™í•˜ ë¡œì§
     speed_counter++;
     if (speed_counter >= stage_data[level].speed) {
         speed_counter = 0;
@@ -86,41 +97,35 @@ void TetrisCore::updateLogic() {
     }
 }
 
-// Å° ÀÔ·Â Ã³¸®
 bool TetrisCore::handleInput(int key) {
     if (is_gameover) return false;
 
     bool acted = false;
     switch (key) {
     case KEY_UP:
-        // 1. Á¦ÀÚ¸® È¸Àü ½Ãµµ
         if (strikeCheck(block_shape, (block_angle + 1) % 4, block_x, block_y) == 0) {
             eraseCurBlock(block_shape, block_angle, block_x, block_y);
             block_angle = (block_angle + 1) % 4;
             acted = true;
         }
-        // 2. ¿ÞÂÊÀ¸·Î 1Ä­ ¹Ð¾î¼­ È¸Àü ½Ãµµ
         else if (strikeCheck(block_shape, (block_angle + 1) % 4, block_x - 1, block_y) == 0) {
             eraseCurBlock(block_shape, block_angle, block_x, block_y);
             block_angle = (block_angle + 1) % 4;
             block_x--;
             acted = true;
         }
-        // 3. ¿À¸¥ÂÊÀ¸·Î 1Ä­ ¹Ð¾î¼­ È¸Àü ½Ãµµ
         else if (strikeCheck(block_shape, (block_angle + 1) % 4, block_x + 1, block_y) == 0) {
             eraseCurBlock(block_shape, block_angle, block_x, block_y);
             block_angle = (block_angle + 1) % 4;
             block_x++;
             acted = true;
         }
-        // 4. [º¹±¸] ¿ÞÂÊÀ¸·Î 2Ä­ ¹Ð¾î¼­ È¸Àü ½Ãµµ (±ä ¸·´ë ºí·Ï¿ë)
         else if (strikeCheck(block_shape, (block_angle + 1) % 4, block_x - 2, block_y) == 0) {
             eraseCurBlock(block_shape, block_angle, block_x, block_y);
             block_angle = (block_angle + 1) % 4;
             block_x -= 2;
             acted = true;
         }
-        // 5. [º¹±¸] ¿À¸¥ÂÊÀ¸·Î 2Ä­ ¹Ð¾î¼­ È¸Àü ½Ãµµ (±ä ¸·´ë ºí·Ï¿ë)
         else if (strikeCheck(block_shape, (block_angle + 1) % 4, block_x + 2, block_y) == 0) {
             eraseCurBlock(block_shape, block_angle, block_x, block_y);
             block_angle = (block_angle + 1) % 4;
@@ -160,107 +165,72 @@ bool TetrisCore::handleInput(int key) {
 }
 
 void TetrisCore::addGarbageLines(int count) {
-    // 2ÀÎ¿ë °ø°Ý ¹Þ±â: ¹Ù´Ú¿¡¼­ È¸»ö ºí·ÏÀÌ ¿Ã¶ó¿È
-    // ±¸Çö ´Ü¼øÈ­¸¦ À§ÇØ ¹° ³ôÀÌ¸¦ ¿Ã¸®´Â °ÍÀ¸·Î ´ëÃ¼ÇÏ°Å³ª, 
-    // TetrisBoard¿¡ ¹Ù´Ú ¿Ã¸®±â ±â´ÉÀ» Ãß°¡ÇØ¾ß ÇÔ.
-    // ¿©±â¼­´Â °£´ÜÈ÷ '¹° ³ôÀÌ »ó½Â' ÇÔ¼ö¸¦ Àç»ç¿ëÇÏ¿© °ø°Ý È¿°ú¸¦ ³¿
     for (int i = 0; i < count; i++) board.raiseWaterLevel();
     draw();
 }
-
-// --- ¾Æ·¡´Â ±âÁ¸ TetrisGameÀÇ ³»ºÎ ÇÔ¼öµéÀ» ±×´ë·Î °¡Á®¿È (¼öÁ¤ ¾øÀ½) ---
-// (moveBlock, checkFullLine, strikeCheck, showCurBlock µîµî...)
-// ´Ü, checkFullLine¿¡¼­ clearedLineCount¸¦ ¾÷µ¥ÀÌÆ® ÇØ¾ß ÇÔ.
 
 void TetrisCore::checkFullLine() {
     int cleared = board.deleteFullLines(ab_x, ab_y);
     if (cleared > 0) {
         lines += cleared;
         score += 100 + (level * 10);
-        clearedLineCount += cleared; // 2ÀÎ¿ë °ø°Ý Ä«¿îÆ®
+        clearedLineCount += cleared;
 
-        // ÇØ¼ö¸é ¸ðµå¶ó¸é ¹° ¼öÀ§ ³·Ãß±â
         if (isWaterMode) {
             for (int k = 0; k < cleared; k++) board.lowerWaterLevel();
         }
 
-        // [º¹±¸µÊ] ·¹º§¾÷ ·ÎÁ÷
-        // ÇöÀç Áö¿î ÁÙ(lines)ÀÌ ¸ñÇ¥Ä¡(clear_line) ÀÌ»óÀÌ¸é ·¹º§¾÷
         if (lines >= stage_data[level].clear_line) {
-            lines = 0;   // ÁÙ Ä«¿îÆ® ÃÊ±âÈ­ (´ÙÀ½ ·¹º§À» À§ÇØ)
-            level++;     // ·¹º§ »ó½Â
-
-            // ÃÖ´ë ·¹º§(9)À» ³ÑÁö ¾Êµµ·Ï ¾ÈÀüÀåÄ¡
+            lines = 0;
+            level++;
             if (level > 9) level = 9;
         }
-
-        draw(); // È­¸é °»½Å (·¹º§, ¸ñÇ¥, Á¡¼ö µî)
+        draw();
     }
 }
 
-// ³ª¸ÓÁö ÇÔ¼öµé(moveBlock, strikeCheck µî)Àº ±âÁ¸ TetrisGame.cpp¿Í µ¿ÀÏÇÏ°Ô º¹»çÇÏµÇ,
-// Å¬·¡½º¸í¸¸ TetrisCore·Î º¯°æ. 
-// drawUIFrame µî À§Ä¡ ÁÂÇ¥´Â ab_x, ab_y¸¦ ±âÁØÀ¸·Î »ó´ë ÁÂÇ¥·Î ¼öÁ¤ ÇÊ¿ä.
 void TetrisCore::showGameStat() {
-    // UI À§Ä¡¸¦ º¸µå ¿·À¸·Î »ó´ëÀûÀ¸·Î ¹èÄ¡
     int uiX = ab_x + 30;
     int uiY = ab_y + 2;
 
-    ConsoleHelper::setColor(WHITE);
+    ConsoleHelper::write(uiX, uiY, "NEXT", WHITE);
+    ConsoleHelper::write(uiX, uiY + 5, "LV: ", WHITE);
+    ConsoleHelper::writeInt(uiX + 4, uiY + 5, level + 1, WHITE);
+    ConsoleHelper::write(uiX, uiY + 7, "SC: ", WHITE);
+    ConsoleHelper::writeInt(uiX + 4, uiY + 7, score, WHITE);
 
-    // 1. ´ÙÀ½ ºí·Ï ¶óº§
-    ConsoleHelper::setCursorPosition(uiX, uiY);      printf("NEXT");
-
-    // 2. ·¹º§ Ç¥½Ã
-    ConsoleHelper::setCursorPosition(uiX, uiY + 5);  printf("LV: %d", level + 1);
-
-    // 3. Á¡¼ö Ç¥½Ã
-    ConsoleHelper::setCursorPosition(uiX, uiY + 7);  printf("SC: %d", score);
-
-    // 4. [Ãß°¡µÊ] ³²Àº ÁÙ ¼ö (GOAL) Ç¥½Ã
-    // ÇöÀç ·¹º§ ¸ñÇ¥Ä¡ - Áö±Ý±îÁö Áö¿î ÁÙ ¼ö
     int remainLines = stage_data[level].clear_line - lines;
     if (remainLines < 0) remainLines = 0;
-
-    ConsoleHelper::setCursorPosition(uiX, uiY + 9);  printf("GOAL: %d ", remainLines);
+    ConsoleHelper::write(uiX, uiY + 9, "GOAL: ", WHITE);
+    ConsoleHelper::writeInt(uiX + 6, uiY + 9, remainLines, WHITE);
 }
 
 void TetrisCore::showNextBlock(int shape) {
     int uiX = ab_x + 30;
     int uiY = ab_y + 1;
 
-    // ±âÁ¸ ºí·Ï Áö¿ì±â
-    for (int i = 0; i < 4; i++) {
-        ConsoleHelper::setCursorPosition(uiX, uiY + i); printf("        ");
-    }
+    // ì§€ìš°ê¸° (í‘œì¤€ ê³µë°± 8ì¹¸)
+    for (int i = 0; i < 4; i++) ConsoleHelper::write(uiX, uiY + i, "        ", BLACK);
 
-    ConsoleHelper::setColor(TetrisBlock::getColor(shape));
+    // ê·¸ë¦¬ê¸° (ë„¤ëª¨ ë¬¸ìž)
     for (int r = 0; r < 4; r++) {
         for (int c = 0; c < 4; c++) {
             if (TetrisBlock::getShape(shape, 0, r, c)) {
-                ConsoleHelper::setCursorPosition((c * 2) + uiX, r + uiY);
-                printf("¡á");
+                ConsoleHelper::write((c * 2) + uiX, r + uiY, "â– ", TetrisBlock::getColor(shape));
             }
         }
     }
 }
-// moveBlock, strikeCheck, mergeBlock, eraseCurBlock µîÀº ±âÁ¸ ÄÚµå ±×´ë·Î »ç¿ë
-// ´Ü, eraseCurBlock°ú drawBoard´Â ¾Õ¼­ ¼öÁ¤ÇÑ '¹Ð¸² ¹æÁö' ÄÚµå°¡ Àû¿ëµÈ »óÅÂ¿©¾ß ÇÔ.
 
 void TetrisCore::showCurBlock(int shape, int angle, int x, int y) {
-    ConsoleHelper::setColor(TetrisBlock::getColor(shape));
     for (int r = 0; r < 4; r++) {
         for (int c = 0; c < 4; c++) {
             if (!TetrisBlock::getShape(shape, angle, r, c)) continue;
             if (y + r < 0) continue;
-            // ab_x, ab_y¸¦ ´õÇØ »ó´ë ÁÂÇ¥·Î Ãâ·Â
-            ConsoleHelper::setCursorPosition((c + x) * 2 + ab_x, y + r + ab_y);
-            printf("¡á");
+
+            ConsoleHelper::write((c + x) * 2 + ab_x, y + r + ab_y, "â– ", TetrisBlock::getColor(shape));
         }
     }
-    ConsoleHelper::setColor(BLACK);
-    // Ä¿¼­ ¼û±â±â¿ë (À§Ä¡´Â Å©°Ô Áß¿äÇÏÁö ¾ÊÀ½)
-    ConsoleHelper::setCursorPosition(ab_x + 20, ab_y + 20);
 }
 
 void TetrisCore::eraseCurBlock(int shape, int angle, int x, int y) {
@@ -272,50 +242,31 @@ void TetrisCore::eraseCurBlock(int shape, int angle, int x, int y) {
             int gy = y + r;
             int waterLine = 20 - board.getWaterHeight();
 
-            // ab_x, ab_y¸¦ ´õÇØ »ó´ë ÁÂÇ¥·Î ÀÌµ¿
-            ConsoleHelper::setCursorPosition((c + x) * 2 + ab_x, gy + ab_y);
-
-            // ¹°ÀÌ ÀÖ´Â °÷ÀÎÁö È®ÀÎ (¹Ð¸² ¹æÁö ·ÎÁ÷ Æ÷ÇÔ)
             if (isWaterMode && gy < 20 && gy >= waterLine && (c + x) > 0 && (c + x) < 13) {
-                ConsoleHelper::setColor(WATER_COLOR);
-                printf("¡á");
+                ConsoleHelper::write((c + x) * 2 + ab_x, gy + ab_y, "â– ", WATER_COLOR);
             }
             else {
-                ConsoleHelper::setColor(BLACK);
-                printf("  ");
+                // í‘œì¤€ ê³µë°± 2ì¹¸
+                ConsoleHelper::write((c + x) * 2 + ab_x, gy + ab_y, "  ", BLACK);
             }
         }
     }
-    ConsoleHelper::setColor(BLACK);
 }
 
 int TetrisCore::strikeCheck(int shape, int angle, int x, int y) {
-    // [ÃÖÀûÈ­] ÇÔ¼ö È£Ãâ ¹Ýº¹ ´ë½Å ºñÆ®¸¶½ºÅ©¸¦ ÇÑ ¹ø °¡Á®¿È
-    unsigned short mask = TetrisBlock::getShapeMask(shape, angle);
-    unsigned short bitChecker = 0x8000; // 1000 0000 0000 0000 (ÃÖ»óÀ§ ºñÆ®)
-
-    for (int i = 0; i < 16; i++) {
-        // ÇØ´ç ºñÆ®°¡ 1ÀÎ °æ¿ì¿¡¸¸ Ãæµ¹ °Ë»ç ¼öÇà (ºñÆ®°¡ 0ÀÌ¸é ·çÇÁ ÆÐ½º)
-        if (mask & bitChecker) {
-            int r = i / 4; // Çà
-            int c = i % 4; // ¿­
-
+    for (int r = 0; r < 4; r++) {
+        for (int c = 0; c < 4; c++) {
+            if (!TetrisBlock::getShape(shape, angle, r, c)) continue;
             int gy = y + r;
             int gx = x + c;
 
-            // 1. º® Ãæµ¹ (ÁÂ¿ì)
-            if (gx <= 0 || gx >= 13) return 1;
+            if (gx <= 0 || gx >= 13) return 1; // ë²½
+            if (gy < 0) continue;
+            if (gy >= 21) return 1; // ë°”ë‹¥
 
-            // 2. ¹Ù´Ú Ãæµ¹
-            if (gy >= 21) return 1;
-
-            // 3. º¸µåÆÇÀÇ ´Ù¸¥ ºí·Ï°ú Ãæµ¹ (È­¸é À§ÂÊ(gy < 0)Àº °Ë»ç Á¦¿Ü)
-            if (gy >= 0) {
-                if (board.getBlock(gy, gx) != EMPTY_BLOCK) return 1;
-            }
+            // ë³´ë“œíŒ ë¸”ë¡ ì¶©ëŒ
+            if (board.getBlock(gy, gx) != EMPTY_BLOCK) return 1;
         }
-        // °Ë»ç ºñÆ®¸¦ ¿À¸¥ÂÊÀ¸·Î ÇÑ Ä­ ÀÌµ¿
-        bitChecker >>= 1;
     }
     return 0;
 }
@@ -338,7 +289,7 @@ int TetrisCore::moveBlock(int* shape, int* angle, int* x, int* y, int* next_shap
 
     if (strikeCheck(*shape, *angle, *x, *y)) {
         (*y)--;
-        if (*y < 0) return 1; // °ÔÀÓ ¿À¹ö (ÃµÀå¿¡ ´êÀ½)
+        if (*y < 0) return 1; // ê²Œìž„ ì˜¤ë²„
 
         mergeBlock(*shape, *angle, *x, *y);
         *shape = *next_shape;
@@ -349,9 +300,7 @@ int TetrisCore::moveBlock(int* shape, int* angle, int* x, int* y, int* next_shap
         *angle = 0;
 
         showNextBlock(*next_shape);
-
-        // ºí·ÏÀÌ ¹Ù´Ú¿¡ ´ê¾ÒÀ¸¹Ç·Î Áï½Ã ¸®ÅÏÇÏµÇ, °ÔÀÓ¿À¹ö´Â ¾Æ´Ô(2´Â ÂøÁö ÀÇ¹Ì)
         return 2;
     }
-    return 0; // Á¤»ó ÀÌµ¿
+    return 0;
 }
