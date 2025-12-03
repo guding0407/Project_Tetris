@@ -13,17 +13,17 @@ TetrisGame::TetrisGame(bool waterMode) {
 void TetrisGame::showLogo() {
     system("cls");
     ConsoleHelper::setCursorVisible(false);
-
     ConsoleHelper::setColor(SKY_BLUE);
-    printf("\n\n");
+    ConsoleHelper::setCursorPosition(10, 3);
     printf("        ECO - TETRIS        \n");
 
-    if (isWaterMode) printf("  SINGLE PLAYER (SEA LEVEL) \n");
-    else            printf("   SINGLE PLAYER (CLASSIC)  \n");
+    ConsoleHelper::setCursorPosition(10, 4);
+    if (isWaterMode) printf("  SINGLE PLAYER (SEA LEVEL)");
+    else            printf("   SINGLE PLAYER (CLASSIC)");
 
-    printf("\n");
+    ConsoleHelper::setCursorPosition(10, 6);
     ConsoleHelper::setColor(WHITE);
-    printf("  [ Press Any Key to Start ]\n");
+    printf("  [ Press Any Key to Start ]");
 
     while (_kbhit()) _getch();
     _getch();
@@ -60,6 +60,7 @@ void TetrisGame::inputData() {
 }
 
 void TetrisGame::run() {
+    
     showLogo();
 
     while (1) {

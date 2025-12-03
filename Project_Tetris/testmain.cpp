@@ -69,11 +69,11 @@ public:
                 // 안내 문구 깜빡임 효과
                 if ((timer / 30) % 2 == 0) {
                     ConsoleHelper::setColor(WHITE);
-                    ConsoleHelper::setCursorPosition(25, 17); printf(">> SELECT OPTION: ");
+                    ConsoleHelper::setCursorPosition(25, 17); cout << ">> SELECT OPTION: " << endl;
                 }
                 else {
                     ConsoleHelper::setColor(GRAY);
-                    ConsoleHelper::setCursorPosition(25, 17); printf(">> SELECT OPTION: ");
+                    ConsoleHelper::setCursorPosition(25, 17); cout << ">> SELECT OPTION: " << endl;
                 }
             }
 
@@ -88,7 +88,7 @@ int main() {
     // 콘솔 창 크기 설정
     system("mode con:cols=100 lines=35");
 
-    
+
     system("mode con:cols=120 lines=40");
 
     system("title Tetris Project");
@@ -100,7 +100,7 @@ int main() {
     srand((unsigned)time(NULL));
 
     while (true) {
-        
+
         system("cls");
 
         // --- 로고 그리기 ---

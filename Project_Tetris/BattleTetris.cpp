@@ -8,6 +8,68 @@
 #define VK_S 0x53
 #define VK_D 0x44
 
+// [추가] 조작법 설명 화면 구현
+void BattleTetris::showControls() {
+    system("cls");
+    ConsoleHelper::setCursorVisible(false);
+
+    // --- 제목 ---
+    ConsoleHelper::setColor(YELLOW);
+    ConsoleHelper::setCursorPosition(12, 3);
+    printf("┏━━━━━━━━━━━━━━━━ BATTLE CONTROLS ━━━━━━━━━━━━━━━━┓");
+
+    // --- PLAYER 1 (Left) ---
+    int p1_x = 15;
+    int y = 6;
+    ConsoleHelper::setColor(SKY_BLUE);
+    ConsoleHelper::setCursorPosition(p1_x, y++); printf("[ PLAYER 1 ]");
+    ConsoleHelper::setColor(GRAY);
+    ConsoleHelper::setCursorPosition(p1_x, y++); printf("  (WASD)    ");
+    y++; // 공백
+    ConsoleHelper::setColor(WHITE);
+    ConsoleHelper::setCursorPosition(p1_x, y++); printf("Rotate :  W ");
+    ConsoleHelper::setCursorPosition(p1_x, y++); printf("Left   :  A ");
+    ConsoleHelper::setCursorPosition(p1_x, y++); printf("Right  :  D ");
+    ConsoleHelper::setCursorPosition(p1_x, y++); printf("Down   :  S ");
+    ConsoleHelper::setCursorPosition(p1_x, y++); printf("Drop   : SPACE");
+
+    // --- 구분선 ---
+    for (int i = 6; i < 15; i++) {
+        ConsoleHelper::setColor(DARK_GRAY);
+        ConsoleHelper::setCursorPosition(37, i); printf("┃");
+    }
+
+    // --- PLAYER 2 (Right) ---
+    int p2_x = 47;
+    y = 6;
+    ConsoleHelper::setColor(GREEN);
+    ConsoleHelper::setCursorPosition(p2_x, y++); printf("[ PLAYER 2 ]");
+    ConsoleHelper::setColor(GRAY);
+    ConsoleHelper::setCursorPosition(p2_x, y++); printf(" (ARROW KEY)");
+    y++; // 공백
+    ConsoleHelper::setColor(WHITE);
+    ConsoleHelper::setCursorPosition(p2_x, y++); printf("Rotate :  ↑ ");
+    ConsoleHelper::setCursorPosition(p2_x, y++); printf("Left   :  ← ");
+    ConsoleHelper::setCursorPosition(p2_x, y++); printf("Right  :  → ");
+    ConsoleHelper::setCursorPosition(p2_x, y++); printf("Down   :  ↓ ");
+    ConsoleHelper::setCursorPosition(p2_x, y++); printf("Drop   : ENTER");
+
+    // --- 하단 안내 ---
+    ConsoleHelper::setColor(YELLOW);
+    ConsoleHelper::setCursorPosition(12, 17);
+    printf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
+
+    ConsoleHelper::setColor(WHITE);
+    ConsoleHelper::setCursorPosition(27, 20);
+    printf("Press Any Key to FIGHT!");
+
+    // 키 입력 대기
+    while (_kbhit()) _getch();
+    _getch();
+
+    system("cls");
+}
+
 void BattleTetris::run(bool waterMode) {
     // 1. 초기화
     ConsoleHelper::init();
@@ -15,19 +77,22 @@ void BattleTetris::run(bool waterMode) {
     // 2. 로고 화면
     system("cls");
     ConsoleHelper::setColor(SKY_BLUE);
-    printf("\n\n");
-    printf("        ECO - TETRIS        \n");
+    ConsoleHelper::setCursorPosition(10, 3);
+    printf("        ECO - TETRIS        ");
 
-    if (waterMode) printf(" 2-PLAYER BATTLE (SEA LEVEL)\n");
-    else           printf("  2-PLAYER BATTLE (CLASSIC) \n");
+    ConsoleHelper::setCursorPosition(10, 4);
+    if (waterMode) printf(" 2-PLAYER BATTLE (SEA LEVEL)");
+    else           printf("  2-PLAYER BATTLE (CLASSIC) ");
 
-    printf("\n");
     ConsoleHelper::setColor(WHITE);
-    printf("  [ Press Any Key to Start ]\n");
+    ConsoleHelper::setCursorPosition(10, 6);
+    printf("  [ Press Any Key to Start ]");
 
     // 키 입력 대기
     while (_kbhit()) _getch();
     _getch();
+
+    showControls();
 
     // 3. 게임 화면 준비
     system("cls");
