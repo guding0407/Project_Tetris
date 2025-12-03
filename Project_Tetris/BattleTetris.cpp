@@ -2,45 +2,117 @@
 #include "TetrisCore.h"
 #include "ConsoleHelper.h"
 
-// Å°º¸µå °¡»ó Å° ÄÚµå
+
+// Å°ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å° ï¿½Úµï¿½
+
+// [Rule 2] constexpr ìƒìˆ˜ ì‚¬ìš©
+
 constexpr int VK_W = 0x57;
 constexpr int VK_A = 0x41;
 constexpr int VK_S = 0x53;
 constexpr int VK_D = 0x44;
 
+// [ì¶”ê°€] ì¡°ì‘ë²• ì„¤ëª… í™”ë©´ êµ¬í˜„
+void BattleTetris::showControls() {
+    system("cls");
+    ConsoleHelper::setCursorVisible(false);
+
+    // --- ì œëª© ---
+    ConsoleHelper::setColor(YELLOW);
+    ConsoleHelper::setCursorPosition(12, 3);
+    printf("â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â” BATTLE CONTROLS â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”“");
+
+    // --- PLAYER 1 (Left) ---
+    int p1_x = 15;
+    int y = 6;
+    ConsoleHelper::setColor(SKY_BLUE);
+    ConsoleHelper::setCursorPosition(p1_x, y++); printf("[ PLAYER 1 ]");
+    ConsoleHelper::setColor(GRAY);
+    ConsoleHelper::setCursorPosition(p1_x, y++); printf("  (WASD)    ");
+    y++; // ê³µë°±
+    ConsoleHelper::setColor(WHITE);
+    ConsoleHelper::setCursorPosition(p1_x, y++); printf("Rotate :  W ");
+    ConsoleHelper::setCursorPosition(p1_x, y++); printf("Left   :  A ");
+    ConsoleHelper::setCursorPosition(p1_x, y++); printf("Right  :  D ");
+    ConsoleHelper::setCursorPosition(p1_x, y++); printf("Down   :  S ");
+    ConsoleHelper::setCursorPosition(p1_x, y++); printf("Drop   : SPACE");
+
+    // --- êµ¬ë¶„ì„  ---
+    for (int i = 6; i < 15; i++) {
+        ConsoleHelper::setColor(DARK_GRAY);
+        ConsoleHelper::setCursorPosition(37, i); printf("â”ƒ");
+    }
+
+    // --- PLAYER 2 (Right) ---
+    int p2_x = 47;
+    y = 6;
+    ConsoleHelper::setColor(GREEN);
+    ConsoleHelper::setCursorPosition(p2_x, y++); printf("[ PLAYER 2 ]");
+    ConsoleHelper::setColor(GRAY);
+    ConsoleHelper::setCursorPosition(p2_x, y++); printf(" (ARROW KEY)");
+    y++; // ê³µë°±
+    ConsoleHelper::setColor(WHITE);
+    ConsoleHelper::setCursorPosition(p2_x, y++); printf("Rotate :  â†‘ ");
+    ConsoleHelper::setCursorPosition(p2_x, y++); printf("Left   :  â† ");
+    ConsoleHelper::setCursorPosition(p2_x, y++); printf("Right  :  â†’ ");
+    ConsoleHelper::setCursorPosition(p2_x, y++); printf("Down   :  â†“ ");
+    ConsoleHelper::setCursorPosition(p2_x, y++); printf("Drop   : ENTER");
+
+    // --- í•˜ë‹¨ ì•ˆë‚´ ---
+    ConsoleHelper::setColor(YELLOW);
+    ConsoleHelper::setCursorPosition(12, 17);
+    printf("â”—â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”›");
+
+    ConsoleHelper::setColor(WHITE);
+    ConsoleHelper::setCursorPosition(27, 20);
+    printf("Press Any Key to FIGHT!");
+
+    // í‚¤ ì…ë ¥ ëŒ€ê¸°
+    while (_kbhit()) _getch();
+    _getch();
+
+    system("cls");
+}
+
 void BattleTetris::run(bool waterMode) {
-    // 1. ÃÊ±âÈ­
+    // 1. ï¿½Ê±ï¿½È­
     ConsoleHelper::init();
 
-    // 2. ·Î°í È­¸é
+    // 2. ï¿½Î°ï¿½ È­ï¿½ï¿½
     system("cls");
     ConsoleHelper::setCursorVisible(false);
 
     ConsoleHelper::setColor(SKY_BLUE);
-    ConsoleHelper::setCursorPosition(54, 5);
-    std::cout << "ECO - TETRIS";
 
+    ConsoleHelper::setCursorPosition(10, 3);
+    std::cout << "ECO - TETRIS";
+    
+  ConsoleHelper::setCursorPosition(10, 4);
     if (waterMode) {
-        ConsoleHelper::setCursorPosition(46, 7);
         std::cout << "2-PLAYER BATTLE (SEA LEVEL)";
     }
     else {
-        ConsoleHelper::setCursorPosition(47, 7);
         std::cout << "2-PLAYER BATTLE (CLASSIC)";
     }
 
     ConsoleHelper::setColor(WHITE);
-    ConsoleHelper::setCursorPosition(47, 10);
+    ConsoleHelper::setCursorPosition(10, 6);
     std::cout << "[ Press Any Key to Start ]";
+  
+    showControls();
+
 
     while (_kbhit()) _getch();
     _getch();
 
-    // 3. °ÔÀÓ È­¸é ÁØºñ
+    // 3. ï¿½ï¿½ï¿½ï¿½ È­ï¿½ï¿½ ï¿½Øºï¿½
+
+    // 3. ê²Œì„ í™”ë©´ ì¤€ë¹„
+
     system("cls");
     ConsoleHelper::setCursorVisible(false);
 
-    // 4. ÇÃ·¹ÀÌ¾î »ı¼º
+    // 4. ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½
     TetrisCore player1(4, 2, waterMode, true);
     TetrisCore player2(50, 2, waterMode, true);
 
@@ -51,7 +123,7 @@ void BattleTetris::run(bool waterMode) {
     GetAsyncKeyState(VK_RETURN);
 
     // ==========================================
-    // [º¯¼ö ¼±¾ğ]
+    // [ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½]
     // ==========================================
     bool p1_rotate_pressed = false;
     bool p1_drop_pressed = false;
@@ -65,11 +137,11 @@ void BattleTetris::run(bool waterMode) {
     constexpr int WINNING_SCORE = 1000;
 
     while (true) {
-        // [Step 1] ¹öÆÛ ºñ¿ì±â
+        // [Step 1] ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         ConsoleHelper::clearBuffer();
 
         // ==========================================
-        // [Step 2] ½ÂÆĞ ÆÇÁ¤
+        // [Step 2] ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         // ==========================================
         int winner = 0;
 
@@ -82,15 +154,15 @@ void BattleTetris::run(bool waterMode) {
             int boxX = 42;
             int boxY = 12;
 
-            ConsoleHelper::write(boxX, boxY++, "¦®¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¯", YELLOW);
-            ConsoleHelper::write(boxX, boxY++, "¦­                             ¦­", YELLOW);
+            ConsoleHelper::write(boxX, boxY++, "â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”“", YELLOW);
+            ConsoleHelper::write(boxX, boxY++, "â”ƒ                             â”ƒ", YELLOW);
 
-            if (winner == 1) ConsoleHelper::write(boxX, boxY, "¦­       PLAYER 1 WIN!       ¦­", YELLOW);
-            else             ConsoleHelper::write(boxX, boxY, "¦­       PLAYER 2 WIN!       ¦­", YELLOW);
+            if (winner == 1) ConsoleHelper::write(boxX, boxY, "â”ƒ       PLAYER 1 WIN!       â”ƒ", YELLOW);
+            else             ConsoleHelper::write(boxX, boxY, "â”ƒ       PLAYER 2 WIN!       â”ƒ", YELLOW);
             boxY++;
 
-            ConsoleHelper::write(boxX, boxY++, "¦­                             ¦­", YELLOW);
-            ConsoleHelper::write(boxX, boxY++, "¦±¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦¬¦°", YELLOW);
+            ConsoleHelper::write(boxX, boxY++, "â”ƒ                             â”ƒ", YELLOW);
+            ConsoleHelper::write(boxX, boxY++, "â”—â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”›", YELLOW);
 
             if (player1.getScore() >= WINNING_SCORE || player2.getScore() >= WINNING_SCORE) {
                 ConsoleHelper::write(boxX + 2, boxY + 1, "       SCORE REACHED!      ", GREEN);
@@ -108,7 +180,7 @@ void BattleTetris::run(bool waterMode) {
         }
 
         // ==========================================
-        // [Step 3] Å° ÀÔ·Â Ã³¸®
+        // [Step 3] Å° ï¿½Ô·ï¿½ Ã³ï¿½ï¿½
         // ==========================================
         if (p1_move_timer > 0) p1_move_timer--;
         if (p2_move_timer > 0) p2_move_timer--;
@@ -154,7 +226,7 @@ void BattleTetris::run(bool waterMode) {
         if (GetAsyncKeyState(KEY_ESC) & 0x8000) break;
 
         // ==========================================
-        // [Step 4] ·ÎÁ÷ ¾÷µ¥ÀÌÆ® & ±×¸®±â
+        // [Step 4] ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® & ï¿½×¸ï¿½ï¿½ï¿½
         // ==========================================
         player1.updateLogic();
         player1.draw();
@@ -162,7 +234,7 @@ void BattleTetris::run(bool waterMode) {
         player2.updateLogic();
         player2.draw();
 
-        // [»èÁ¦µÊ] °ø°İ ½Ã½ºÅÛ ·ÎÁ÷ Á¦°Å
+        // [ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½ï¿½ï¿½ ï¿½Ã½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         /*
         int p1_attack = player1.getLinesCleared();
         int p2_attack = player2.getLinesCleared();
@@ -171,7 +243,7 @@ void BattleTetris::run(bool waterMode) {
         */
 
         // ==========================================
-        // [Step 5] ÃÖÁ¾ ·»´õ¸µ
+        // [Step 5] ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         // ==========================================
         ConsoleHelper::render();
 
