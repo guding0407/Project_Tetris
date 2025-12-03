@@ -11,7 +11,6 @@ TetrisGame::TetrisGame(bool waterMode) {
 }
 
 void TetrisGame::showLogo() {
-    // 1. 화면 지우기 (새 창 느낌)
     system("cls");
     ConsoleHelper::setCursorVisible(false);
 
@@ -26,7 +25,6 @@ void TetrisGame::showLogo() {
     ConsoleHelper::setColor(WHITE);
     printf("  [ Press Any Key to Start ]\n");
 
-    // 키 입력 대기
     while (_kbhit()) _getch();
     _getch();
 
@@ -34,7 +32,6 @@ void TetrisGame::showLogo() {
 }
 
 void TetrisGame::inputData() {
-    // 이 함수는 printf를 써도 무방 (게임 루프 밖이라서)
     ConsoleHelper::setColor(GRAY);
     int x = 10, y = 7;
     ConsoleHelper::setCursorPosition(x, y++); printf("┏━━━━━━━━━━<GAME KEY>━━━━━━━━┓");
@@ -63,27 +60,22 @@ void TetrisGame::inputData() {
 }
 
 void TetrisGame::run() {
-    // 1. 로고 보여주기
     showLogo();
 
     while (1) {
-        // 2. 레벨 입력 받기
+        // [수정 1] 게임 재시작 시 화면을 깨끗하게 지움 (겹침 방지)
+        system("cls");
+
         inputData();
 
-        // 3. 더블 버퍼링 초기화
         ConsoleHelper::init();
 
-        // 4. 싱글 플레이어 게임 객체 생성
-        // (x좌표=4, y좌표=2, 해수면모드, 전투모드=false)
         TetrisCore game(4, 2, isWaterMode, false);
         game.initGame(startLevel);
 
-        // 5. 게임 루프
         while (!game.isGameOver()) {
-            // [Step 1] 버퍼 비우기
             ConsoleHelper::clearBuffer();
 
-            // [Step 2] 키 입력 처리 (기존 싱글모드 방식 유지)
             if (_kbhit()) {
                 int key = _getch();
                 if (key == 0 || key == 0xE0) {
@@ -97,25 +89,32 @@ void TetrisGame::run() {
                     game.handleInput(KEY_SPACE);
                 }
                 else if (key == KEY_ESC) {
-                    return; // ESC 누르면 종료
+                    return;
                 }
             }
 
-            // [Step 3] 로직 업데이트 및 그리기(Write)
             game.updateLogic();
-            game.draw(); // 메모리에 그리기
+            game.draw();
 
-            // [Step 4] 최종 렌더링
             ConsoleHelper::render();
 
             Sleep(20);
         }
 
-        // 6. 게임 오버 처리
-        ConsoleHelper::write(20, 10, "GAME OVER - Press Any Key", RED);
-        ConsoleHelper::render(); // 마지막 화면 갱신
+        // [수정 2] 게임 오버 시 깔끔한 박스 출력
+        int boxX = 15;
+        int boxY = 10;
+        ConsoleHelper::write(boxX, boxY++, "┏━━━━━━━━━━━━━━━┓", RED);
+        ConsoleHelper::write(boxX, boxY++, "┃                              ┃", RED);
+        ConsoleHelper::write(boxX, boxY++, "┃          GAME OVER           ┃", RED);
+        ConsoleHelper::write(boxX, boxY++, "┃                              ┃", RED);
+        ConsoleHelper::write(boxX, boxY++, "┃      Press Any Key...        ┃", RED);
+        ConsoleHelper::write(boxX, boxY++, "┃                              ┃", RED);
+        ConsoleHelper::write(boxX, boxY++, "┗━━━━━━━━━━━━━━━┛", RED);
 
-        while (_kbhit()) _getch(); // 버퍼 비우기
-        _getch();
+        ConsoleHelper::render(); // 박스 출력
+
+        while (_kbhit()) _getch(); // 키 버퍼 비우기
+        _getch(); // 키 입력 대기
     }
 }
