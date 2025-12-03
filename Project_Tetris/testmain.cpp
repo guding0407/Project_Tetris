@@ -1,4 +1,4 @@
-﻿#include "TetrisGame.h"
+#include "TetrisGame.h"
 #include "BattleTetris.h"
 #include "ConsoleHelper.h"
 #include "TetrisBlock.h" 
@@ -73,7 +73,6 @@ public:
 };
 
 int main() {
-    // 콘솔 설정
     system("mode con:cols=120 lines=40");
     system("title Tetris Project");
 
