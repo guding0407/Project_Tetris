@@ -2,9 +2,6 @@
 #include "TetrisCore.h"
 #include "ConsoleHelper.h"
 
-
-// Ű���� ���� Ű �ڵ�
-
 // [Rule 2] constexpr 상수 사용
 
 constexpr int VK_W = 0x57;
@@ -100,10 +97,6 @@ void BattleTetris::run(bool waterMode) {
     std::cout << "[ Press Any Key to Start ]";
   
     showControls();
-
-
-    while (_kbhit()) _getch();
-    _getch();
 
     // 3. ���� ȭ�� �غ�
 
