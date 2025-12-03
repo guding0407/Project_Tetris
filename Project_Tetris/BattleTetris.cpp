@@ -2,7 +2,11 @@
 #include "TetrisCore.h"
 #include "ConsoleHelper.h"
 
+
+// Ű���� ���� Ű �ڵ�
+
 // [Rule 2] constexpr 상수 사용
+
 constexpr int VK_W = 0x57;
 constexpr int VK_A = 0x41;
 constexpr int VK_S = 0x53;
@@ -71,9 +75,10 @@ void BattleTetris::showControls() {
 }
 
 void BattleTetris::run(bool waterMode) {
+    // 1. �ʱ�ȭ
     ConsoleHelper::init();
 
-    // [Rule 7] printf -> std::cout
+    // 2. �ΰ� ȭ��
     system("cls");
     ConsoleHelper::setCursorVisible(false);
 
@@ -96,10 +101,18 @@ void BattleTetris::run(bool waterMode) {
   
     showControls();
 
+
+    while (_kbhit()) _getch();
+    _getch();
+
+    // 3. ���� ȭ�� �غ�
+
     // 3. 게임 화면 준비
+
     system("cls");
     ConsoleHelper::setCursorVisible(false);
 
+    // 4. �÷��̾� ����
     TetrisCore player1(4, 2, waterMode, true);
     TetrisCore player2(50, 2, waterMode, true);
 
@@ -109,6 +122,9 @@ void BattleTetris::run(bool waterMode) {
     Sleep(500);
     GetAsyncKeyState(VK_RETURN);
 
+    // ==========================================
+    // [���� ����]
+    // ==========================================
     bool p1_rotate_pressed = false;
     bool p1_drop_pressed = false;
     bool p2_rotate_pressed = false;
@@ -121,8 +137,12 @@ void BattleTetris::run(bool waterMode) {
     constexpr int WINNING_SCORE = 1000;
 
     while (true) {
+        // [Step 1] ���� ����
         ConsoleHelper::clearBuffer();
 
+        // ==========================================
+        // [Step 2] ���� ����
+        // ==========================================
         int winner = 0;
 
         if (player1.isGameOver()) winner = 2;
@@ -159,10 +179,13 @@ void BattleTetris::run(bool waterMode) {
             break;
         }
 
+        // ==========================================
+        // [Step 3] Ű �Է� ó��
+        // ==========================================
         if (p1_move_timer > 0) p1_move_timer--;
         if (p2_move_timer > 0) p2_move_timer--;
 
-        // P1 Input
+        // --- [Player 1] ---
         if (GetAsyncKeyState(VK_W) & 0x8000) {
             if (!p1_rotate_pressed) { player1.handleInput(KEY_UP); p1_rotate_pressed = true; }
         }
@@ -181,7 +204,7 @@ void BattleTetris::run(bool waterMode) {
             if (moved) p1_move_timer = MOVE_SPEED;
         }
 
-        // P2 Input
+        // --- [Player 2] ---
         if (GetAsyncKeyState(VK_UP) & 0x8000) {
             if (!p2_rotate_pressed) { player2.handleInput(KEY_UP); p2_rotate_pressed = true; }
         }
@@ -202,18 +225,28 @@ void BattleTetris::run(bool waterMode) {
 
         if (GetAsyncKeyState(KEY_ESC) & 0x8000) break;
 
+        // ==========================================
+        // [Step 4] ���� ������Ʈ & �׸���
+        // ==========================================
         player1.updateLogic();
         player1.draw();
 
         player2.updateLogic();
         player2.draw();
 
+        // [������] ���� �ý��� ���� ����
+        /*
         int p1_attack = player1.getLinesCleared();
         int p2_attack = player2.getLinesCleared();
         if (p1_attack >= 2) player2.addGarbageLines(p1_attack - 1);
         if (p2_attack >= 2) player1.addGarbageLines(p2_attack - 1);
+        */
 
+        // ==========================================
+        // [Step 5] ���� ������
+        // ==========================================
         ConsoleHelper::render();
+
         Sleep(20);
     }
 }
