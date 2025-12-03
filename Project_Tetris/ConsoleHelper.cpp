@@ -112,3 +112,12 @@ void ConsoleHelper::setCursorPosition(int x, int y) {
 void ConsoleHelper::setColor(int color) {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
 }
+void ConsoleHelper::recover() {
+    for (int y = 0; y < SCREEN_HEIGHT; y++) {
+        for (int x = 0; x < SCREEN_WIDTH; x++) {
+            // 현재 화면(front)의 내용을 작업용 버퍼(back)로 복사
+            backBuffer[y][x] = frontBuffer[y][x];
+            backBuffer[y][x].assigned = true; // "내용이 있다"고 표시
+        }
+    }
+}

@@ -27,7 +27,7 @@ void BattleTetris::run(bool waterMode) {
 
     // 키 입력 대기
     while (_kbhit()) _getch();
-    _getch(); // 여기서 누른 키(보통 엔터)가 게임 내 입력으로 이어지지 않게 해야 함
+    _getch();
 
     // 3. 게임 화면 준비
     system("cls");
@@ -40,10 +40,9 @@ void BattleTetris::run(bool waterMode) {
     player1.initGame(0);
     player2.initGame(0);
 
-    // [핵심 수정] P2 하드드롭 버그 수정
-    // 사용자가 시작하려고 누른 엔터키가 P2의 하드드롭(Enter)으로 인식되는 것을 방지
-    Sleep(500); // 손을 뗄 시간을 줌
-    GetAsyncKeyState(VK_RETURN); // 엔터키 입력 버퍼 비우기 (중요)
+    // P2 하드드롭 버그 수정용 대기
+    Sleep(500);
+    GetAsyncKeyState(VK_RETURN);
 
     // ==========================================
     // [변수 선언]
@@ -57,17 +56,25 @@ void BattleTetris::run(bool waterMode) {
     int p2_move_timer = 0;
     const int MOVE_SPEED = 3;
 
+    // [추가] 승리 점수 목표 설정
+    const int WINNING_SCORE = 300;
+
     while (true) {
         // [Step 1] 버퍼 비우기
         ConsoleHelper::clearBuffer();
 
         // ==========================================
-        // [Step 2] 승패 판정 및 결과 출력
+        // [Step 2] 승패 판정 (사망 또는 점수 달성)
         // ==========================================
         int winner = 0; // 0:진행중, 1:P1승리, 2:P2승리
 
+        // 1. 상대방이 죽었을 때 승리
         if (player1.isGameOver()) winner = 2;
         else if (player2.isGameOver()) winner = 1;
+
+        // 2. [추가됨] 목표 점수(1000점) 달성 시 승리
+        else if (player1.getScore() >= WINNING_SCORE) winner = 1;
+        else if (player2.getScore() >= WINNING_SCORE) winner = 2;
 
         if (winner != 0) {
             // 결과 박스 출력
@@ -84,7 +91,14 @@ void BattleTetris::run(bool waterMode) {
             ConsoleHelper::write(boxX, boxY++, "┃                  ┃", YELLOW);
             ConsoleHelper::write(boxX, boxY++, "┗━━━━━━━━━┛", YELLOW);
 
-            ConsoleHelper::write(boxX + 2, boxY + 1, "Press Any Key...", WHITE);
+            // 승리 사유 출력 (선택 사항)
+            if (player1.getScore() >= WINNING_SCORE || player2.getScore() >= WINNING_SCORE) {
+                ConsoleHelper::write(boxX + 2, boxY + 1, "SCORE REACHED!", GREEN);
+                ConsoleHelper::write(boxX + 2, boxY + 2, "Press Any Key...", WHITE);
+            }
+            else {
+                ConsoleHelper::write(boxX + 2, boxY + 1, "Press Any Key...", WHITE);
+            }
 
             ConsoleHelper::render();
 
@@ -153,9 +167,6 @@ void BattleTetris::run(bool waterMode) {
         int p2_attack = player2.getLinesCleared();
         if (p1_attack >= 2) player2.addGarbageLines(p1_attack - 1);
         if (p2_attack >= 2) player1.addGarbageLines(p2_attack - 1);
-
-        // [수정] "VS" 텍스트 삭제됨 (요청사항 반영)
-        // ConsoleHelper::write(35, 10, "VS", YELLOW); <-- 삭제
 
         // ==========================================
         // [Step 5] 최종 렌더링
