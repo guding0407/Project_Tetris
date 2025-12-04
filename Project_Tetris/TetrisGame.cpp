@@ -16,7 +16,7 @@ void TetrisGame::showLogo() {
     ConsoleHelper::setColor(SKY_BLUE);
 
     ConsoleHelper::setCursorPosition(10, 3);
-    std::cout << "        ECO - TETRIS        ";
+    std::cout << "         TETRIS GAME        ";
   
     ConsoleHelper::setCursorPosition(10, 4);
     if (isWaterMode) std::cout << "  SINGLE PLAYER (SEA LEVEL) ";
@@ -117,5 +117,6 @@ void TetrisGame::run() {
 
         while (_kbhit()) _getch();
         _getch();
+        break;
     }
 }
