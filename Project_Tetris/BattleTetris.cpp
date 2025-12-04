@@ -78,17 +78,31 @@ void BattleTetris::run() {
 
     ConsoleHelper::setColor(SKY_BLUE);
     ConsoleHelper::setCursorPosition(10, 3);
-    std::cout << "ECO - TETRIS";
 
+   
+  
+
+    std::cout << "     UPGRADE TETRIS        ";
+    
     ConsoleHelper::setCursorPosition(10, 4);
+    if (waterMode) {
+        std::cout << "2-PLAYER BATTLE (SEA LEVEL)";
+    }
+    else {
+        std::cout << "2-PLAYER BATTLE (CLASSIC)";
+    }
 
-    // [수정] 멤버 변수 isWaterMode 사용
-    if (isWaterMode) std::cout << "2-PLAYER BATTLE (SEA LEVEL)";
-    else             std::cout << "2-PLAYER BATTLE (CLASSIC)";
 
     ConsoleHelper::setColor(WHITE);
     ConsoleHelper::setCursorPosition(10, 6);
     std::cout << "[ Press Any Key to Start ]";
+
+
+    while (_kbhit()) _getch();
+    _getch();
+  
+    showControls();
+
 
     showControls();
 
