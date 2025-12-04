@@ -79,13 +79,10 @@ void BattleTetris::run() {
     ConsoleHelper::setColor(SKY_BLUE);
     ConsoleHelper::setCursorPosition(10, 3);
 
-   
-  
-
     std::cout << "     UPGRADE TETRIS        ";
     
     ConsoleHelper::setCursorPosition(10, 4);
-    if (waterMode) {
+    if (isWaterMode) {
         std::cout << "2-PLAYER BATTLE (SEA LEVEL)";
     }
     else {
@@ -100,9 +97,6 @@ void BattleTetris::run() {
 
     while (_kbhit()) _getch();
     _getch();
-  
-    showControls();
-
 
     showControls();
 
