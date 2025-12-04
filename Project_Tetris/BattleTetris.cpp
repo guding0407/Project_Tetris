@@ -1,87 +1,87 @@
 ﻿#include "BattleTetris.h"
 #include "TetrisCore.h"
 #include "ConsoleHelper.h"
-
-// [Rule 2] constexpr 상수 사용
+#include <iostream>
 
 constexpr int VK_W = 0x57;
 constexpr int VK_A = 0x41;
 constexpr int VK_S = 0x53;
 constexpr int VK_D = 0x44;
 
-// [추가] 조작법 설명 화면 구현
+// [수정] 생성자 구현: waterMode를 멤버 변수로 저장
+BattleTetris::BattleTetris(bool waterMode) : isWaterMode(waterMode) {}
+
 void BattleTetris::showControls() {
     system("cls");
     ConsoleHelper::setCursorVisible(false);
 
-    // --- 제목 ---
     ConsoleHelper::setColor(YELLOW);
     ConsoleHelper::setCursorPosition(12, 3);
-    printf("┏━━━━━━━━━━━━━━━━ BATTLE CONTROLS ━━━━━━━━━━━━━━━━┓");
+    std::cout << "┏━━━━━━━━━━━━━━━━ BATTLE CONTROLS ━━━━━━━━━━━━━━━━┓";
 
-    // --- PLAYER 1 (Left) ---
+    // P1
     int p1_x = 15;
     int y = 6;
     ConsoleHelper::setColor(SKY_BLUE);
-    ConsoleHelper::setCursorPosition(p1_x, y++); cout << "[ PLAYER 1 ]";
+    ConsoleHelper::setCursorPosition(p1_x, y++); std::cout << "[ PLAYER 1 ]";
     ConsoleHelper::setColor(GRAY);
-    ConsoleHelper::setCursorPosition(p1_x, y++); cout << "  (WASD)    ";
-    y++; // 공백
+    ConsoleHelper::setCursorPosition(p1_x, y++); std::cout << "  (WASD)    ";
+    y++;
     ConsoleHelper::setColor(WHITE);
-    ConsoleHelper::setCursorPosition(p1_x, y++); cout << "Rotate :  W ";
-    ConsoleHelper::setCursorPosition(p1_x, y++); cout << "Left   :  A ";
-    ConsoleHelper::setCursorPosition(p1_x, y++); cout << "Right  :  D ";
-    ConsoleHelper::setCursorPosition(p1_x, y++); cout << "Down   :  S ";
-    ConsoleHelper::setCursorPosition(p1_x, y++); cout << "Drop   : SPACE";
+    ConsoleHelper::setCursorPosition(p1_x, y++); std::cout << "Rotate :  W ";
+    ConsoleHelper::setCursorPosition(p1_x, y++); std::cout << "Left   :  A ";
+    ConsoleHelper::setCursorPosition(p1_x, y++); std::cout << "Right  :  D ";
+    ConsoleHelper::setCursorPosition(p1_x, y++); std::cout << "Down   :  S ";
+    ConsoleHelper::setCursorPosition(p1_x, y++); std::cout << "Drop   : SPACE";
 
-    // --- 구분선 ---
+    // 구분선
     for (int i = 6; i < 15; i++) {
         ConsoleHelper::setColor(DARK_GRAY);
-        ConsoleHelper::setCursorPosition(37, i); printf("┃");
+        ConsoleHelper::setCursorPosition(37, i); std::cout << "┃";
     }
 
-    // --- PLAYER 2 (Right) ---
+    // P2
     int p2_x = 47;
     y = 6;
     ConsoleHelper::setColor(GREEN);
-    ConsoleHelper::setCursorPosition(p2_x, y++); printf("[ PLAYER 2 ]");
+    ConsoleHelper::setCursorPosition(p2_x, y++); std::cout << "[ PLAYER 2 ]";
     ConsoleHelper::setColor(GRAY);
-    ConsoleHelper::setCursorPosition(p2_x, y++); printf(" (ARROW KEY)");
-    y++; // 공백
+    ConsoleHelper::setCursorPosition(p2_x, y++); std::cout << " (ARROW KEY)";
+    y++;
     ConsoleHelper::setColor(WHITE);
-    ConsoleHelper::setCursorPosition(p2_x, y++); printf("Rotate :  ↑ ");
-    ConsoleHelper::setCursorPosition(p2_x, y++); printf("Left   :  ← ");
-    ConsoleHelper::setCursorPosition(p2_x, y++); printf("Right  :  → ");
-    ConsoleHelper::setCursorPosition(p2_x, y++); printf("Down   :  ↓ ");
-    ConsoleHelper::setCursorPosition(p2_x, y++); printf("Drop   : ENTER");
+    ConsoleHelper::setCursorPosition(p2_x, y++); std::cout << "Rotate :  ↑ ";
+    ConsoleHelper::setCursorPosition(p2_x, y++); std::cout << "Left   :  ← ";
+    ConsoleHelper::setCursorPosition(p2_x, y++); std::cout << "Right  :  → ";
+    ConsoleHelper::setCursorPosition(p2_x, y++); std::cout << "Down   :  ↓ ";
+    ConsoleHelper::setCursorPosition(p2_x, y++); std::cout << "Drop   : ENTER";
 
-    // --- 하단 안내 ---
     ConsoleHelper::setColor(YELLOW);
     ConsoleHelper::setCursorPosition(12, 17);
-    printf("┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
+    std::cout << "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛";
 
     ConsoleHelper::setColor(WHITE);
     ConsoleHelper::setCursorPosition(27, 20);
-    printf("Press Any Key to FIGHT!");
+    std::cout << "Press Any Key to FIGHT!";
 
-    // 키 입력 대기
     while (_kbhit()) _getch();
     _getch();
 
     system("cls");
 }
 
-void BattleTetris::run(bool waterMode) {
-    // 1. �ʱ�ȭ
+// [수정] 인자 없는 run() 구현
+void BattleTetris::run() {
     ConsoleHelper::init();
 
-    // 2. �ΰ� ȭ��
     system("cls");
     ConsoleHelper::setCursorVisible(false);
 
     ConsoleHelper::setColor(SKY_BLUE);
-
     ConsoleHelper::setCursorPosition(10, 3);
+
+   
+  
+
     std::cout << "     UPGRADE TETRIS        ";
     
     ConsoleHelper::setCursorPosition(10, 4);
@@ -92,25 +92,26 @@ void BattleTetris::run(bool waterMode) {
         std::cout << "2-PLAYER BATTLE (CLASSIC)";
     }
 
+
     ConsoleHelper::setColor(WHITE);
     ConsoleHelper::setCursorPosition(10, 6);
     std::cout << "[ Press Any Key to Start ]";
+
 
     while (_kbhit()) _getch();
     _getch();
   
     showControls();
 
-    // 3. ���� ȭ�� �غ�
 
-    // 3. 게임 화면 준비
+    showControls();
 
     system("cls");
     ConsoleHelper::setCursorVisible(false);
 
-    // 4. �÷��̾� ����
-    TetrisCore player1(4, 2, waterMode, true);
-    TetrisCore player2(50, 2, waterMode, true);
+    // [수정] 멤버 변수 isWaterMode 사용
+    TetrisCore player1(4, 2, isWaterMode, true);
+    TetrisCore player2(50, 2, isWaterMode, true);
 
     player1.initGame(0);
     player2.initGame(0);
@@ -118,9 +119,6 @@ void BattleTetris::run(bool waterMode) {
     Sleep(500);
     GetAsyncKeyState(VK_RETURN);
 
-    // ==========================================
-    // [���� ����]
-    // ==========================================
     bool p1_rotate_pressed = false;
     bool p1_drop_pressed = false;
     bool p2_rotate_pressed = false;
@@ -128,17 +126,12 @@ void BattleTetris::run(bool waterMode) {
 
     int p1_move_timer = 0;
     int p2_move_timer = 0;
-
     constexpr int MOVE_SPEED = 3;
     constexpr int WINNING_SCORE = 1000;
 
     while (true) {
-        // [Step 1] ���� ����
         ConsoleHelper::clearBuffer();
 
-        // ==========================================
-        // [Step 2] ���� ����
-        // ==========================================
         int winner = 0;
 
         if (player1.isGameOver()) winner = 2;
@@ -175,13 +168,10 @@ void BattleTetris::run(bool waterMode) {
             break;
         }
 
-        // ==========================================
-        // [Step 3] Ű �Է� ó��
-        // ==========================================
         if (p1_move_timer > 0) p1_move_timer--;
         if (p2_move_timer > 0) p2_move_timer--;
 
-        // --- [Player 1] ---
+        // P1 Input
         if (GetAsyncKeyState(VK_W) & 0x8000) {
             if (!p1_rotate_pressed) { player1.handleInput(KEY_UP); p1_rotate_pressed = true; }
         }
@@ -200,7 +190,7 @@ void BattleTetris::run(bool waterMode) {
             if (moved) p1_move_timer = MOVE_SPEED;
         }
 
-        // --- [Player 2] ---
+        // P2 Input
         if (GetAsyncKeyState(VK_UP) & 0x8000) {
             if (!p2_rotate_pressed) { player2.handleInput(KEY_UP); p2_rotate_pressed = true; }
         }
@@ -221,28 +211,13 @@ void BattleTetris::run(bool waterMode) {
 
         if (GetAsyncKeyState(KEY_ESC) & 0x8000) break;
 
-        // ==========================================
-        // [Step 4] ���� ������Ʈ & �׸���
-        // ==========================================
         player1.updateLogic();
         player1.draw();
 
         player2.updateLogic();
         player2.draw();
 
-        // [������] ���� �ý��� ���� ����
-        /*
-        int p1_attack = player1.getLinesCleared();
-        int p2_attack = player2.getLinesCleared();
-        if (p1_attack >= 2) player2.addGarbageLines(p1_attack - 1);
-        if (p2_attack >= 2) player1.addGarbageLines(p2_attack - 1);
-        */
-
-        // ==========================================
-        // [Step 5] ���� ������
-        // ==========================================
         ConsoleHelper::render();
-
         Sleep(20);
     }
 }

@@ -1,4 +1,5 @@
-﻿#include "TetrisGame.h"
+﻿#include "GameMode.h" // [중요] 부모 클래스 헤더 포함
+#include "TetrisGame.h"
 #include "BattleTetris.h"
 #include "ConsoleHelper.h"
 #include "TetrisBlock.h" 
@@ -7,7 +8,7 @@
 #include <windows.h>
 #include <time.h>
 #include <stdlib.h>
-#include <iostream> // cout 사용
+#include <iostream>
 
 // 메인 화면 애니메이션 효과 클래스
 class MenuEffect {
@@ -17,7 +18,6 @@ public:
         for (int r = 0; r < 4; r++) {
             for (int c = 0; c < 4; c++) {
                 if (TetrisBlock::getShape(shape, angle, r, c)) {
-                    // [변경] printf -> cout
                     ConsoleHelper::setCursorPosition((x + c) * 2, y + r);
                     std::cout << "■";
                 }
@@ -29,7 +29,7 @@ public:
         ConsoleHelper::setColor(BLACK);
         for (int r = 0; r < 4; r++) {
             ConsoleHelper::setCursorPosition(x * 2, y + r);
-            std::cout << "        "; // 공백 8칸
+            std::cout << "        ";
         }
     }
 
@@ -62,7 +62,6 @@ public:
                     ConsoleHelper::setCursorPosition(25, 17); std::cout << ">> SELECT OPTION: ";
                 }
 
-                // [중요] cout 버퍼 비우기 (안하면 출력 밀림)
                 std::cout << std::flush;
             }
 
@@ -76,21 +75,18 @@ int main() {
     system("mode con:cols=120 lines=40");
     system("title Tetris Project");
 
-    // 초기화
-    ConsoleHelper::init(); // 여기서 sync_with_stdio(false)가 호출됨
+    ConsoleHelper::init();
     ConsoleHelper::setCursorVisible(false);
     srand((unsigned)time(NULL));
 
     while (true) {
         system("cls");
 
-        // --- 로고 그리기 (cout 사용) ---
+        // --- 로고 그리기 ---
         ConsoleHelper::setColor(SKY_BLUE);
-
         ConsoleHelper::setCursorPosition(25, 5);  std::cout << "====================================";
         ConsoleHelper::setCursorPosition(25, 6);  std::cout << "       TETRIS PROJECT LAUNCHER      ";
         ConsoleHelper::setCursorPosition(25, 7);  std::cout << "====================================";
-
 
         // --- 메뉴 그리기 ---
         ConsoleHelper::setColor(WHITE);
@@ -103,25 +99,24 @@ int main() {
         ConsoleHelper::setColor(GRAY);
         ConsoleHelper::setCursorPosition(25, 27); std::cout << "Use Number Keys (1-5) to Select.";
 
-        // --- 애니메이션 재생 ---
+        // --- 입력 대기 ---
         char choice = MenuEffect::waitForInputWithAnimation();
 
-        // --- 선택 처리 ---
+        // [핵심] 다형성(Polymorphism) 적용
+        // 부모 클래스(GameMode) 포인터로 자식 객체를 가리킴
+        GameMode* game = nullptr;
+
         if (choice == '1') {
-            TetrisGame game(false);
-            game.run();
+            game = new TetrisGame(false);
         }
         else if (choice == '2') {
-            TetrisGame game(true);
-            game.run();
+            game = new TetrisGame(true);
         }
         else if (choice == '3') {
-            BattleTetris battle;
-            battle.run(false);
+            game = new BattleTetris(false);
         }
         else if (choice == '4') {
-            BattleTetris battle;
-            battle.run(true);
+            game = new BattleTetris(true);
         }
         else if (choice == '5' || choice == KEY_ESC) {
             ConsoleHelper::setCursorPosition(25, 19);
@@ -129,6 +124,16 @@ int main() {
             std::cout << "Exiting Game...";
             Sleep(1000);
             break;
+        }
+
+        // [핵심] 다형성을 통해 실행
+        // game이 TetrisGame인지 BattleTetris인지 몰라도 run() 하나로 실행됨
+        if (game != nullptr) {
+            game->run();
+
+            // 사용이 끝난 객체는 메모리 해제
+            delete game;
+            game = nullptr;
         }
     }
 
