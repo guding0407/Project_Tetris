@@ -109,9 +109,9 @@ void TetrisGame::run() {
         ConsoleHelper::write(boxX, boxY++, "┃                              ┃", RED);
         ConsoleHelper::write(boxX, boxY, "┃          GAME OVER           ┃", RED); boxY++;
         ConsoleHelper::write(boxX, boxY++, "┃                              ┃", RED);
-        ConsoleHelper::write(boxX, boxY, "┃      Press Any Key...        ┃", WHITE); boxY++;
-        ConsoleHelper::write(boxX, boxY++, "┃                              ┃", RED);
-        ConsoleHelper::write(boxX, boxY++, "┗━━━━━━━━━━━━━━━┛", RED);
+        ConsoleHelper::write(boxX, boxY++, "┗━━━━━━━━━━━━━━━┛", RED); boxY++;
+
+        ConsoleHelper::write(boxX, boxY, "         Press Any Key...        ", WHITE);
 
         ConsoleHelper::render();
 
