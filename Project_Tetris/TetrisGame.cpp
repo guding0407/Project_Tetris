@@ -2,6 +2,9 @@
 #include "ConsoleHelper.h"
 #include <conio.h>
 #include <iostream>
+#include <windows.h>
+#include <mmsystem.h>
+#pragma comment(lib, "winmm.lib")
 
 using namespace std;
 
@@ -11,13 +14,17 @@ TetrisGame::TetrisGame(bool waterMode) {
 }
 
 void TetrisGame::showLogo() {
+    PlaySound(L"gamestart-272829", NULL, SND_FILENAME | SND_SYNC);
     system("cls");
     ConsoleHelper::setCursorVisible(false);
     ConsoleHelper::setColor(SKY_BLUE);
 
+    // ✅ 시작 효과음
+    PlaySound(L"8-bit-heaven-26287.wav", NULL, SND_FILENAME | SND_ASYNC);
+
     ConsoleHelper::setCursorPosition(10, 3);
     std::cout << "         TETRIS GAME        ";
-  
+
     ConsoleHelper::setCursorPosition(10, 4);
     if (isWaterMode) std::cout << "  SINGLE PLAYER (SEA LEVEL) ";
     else            std::cout << "   SINGLE PLAYER (CLASSIC)  ";
@@ -48,18 +55,12 @@ void TetrisGame::inputData() {
     std::cout << "Select Start level[1-8]:          ";
 
     while (1) {
-        
         ConsoleHelper::setCursorPosition(35, 3);
-
         char key = _getch();
 
-        // 1~8 사이의 숫자키인지 확인
         if (key >= '1' && key <= '8') {
-            // 입력한 숫자 화면에 찍어주기 (시각적 피드백)
             std::cout << key;
-            Sleep(200); // 사용자가 자신이 누른 키를 볼 수 있게 0.2초 대기
-
-            // 아스키코드 계산: '1'(49) - '1'(49) = 0 -> startLevel = 0
+            Sleep(200);
             startLevel = key - '1';
             break;
         }
@@ -68,7 +69,7 @@ void TetrisGame::inputData() {
 }
 
 void TetrisGame::run() {
-    
+
     showLogo();
 
     while (1) {
@@ -79,6 +80,9 @@ void TetrisGame::run() {
 
         TetrisCore game(4, 2, isWaterMode, false);
         game.initGame(startLevel);
+
+        // ✅ 배경음 시작 (무한 반복)
+        PlaySound(L"90s-drums-432390.wav", NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 
         while (!game.isGameOver()) {
             ConsoleHelper::clearBuffer();
@@ -96,6 +100,7 @@ void TetrisGame::run() {
                     game.handleInput(KEY_SPACE);
                 }
                 else if (key == KEY_ESC) {
+                    PlaySound(NULL, 0, 0); // ✅ 배경음 정지
                     return;
                 }
             }
@@ -104,11 +109,13 @@ void TetrisGame::run() {
             game.draw();
 
             ConsoleHelper::render();
-
             Sleep(20);
         }
 
-        // 게임 오버 처리
+        // ✅ 게임오버 효과음
+        PlaySound(L"game-over-arcade-6435.wav", NULL, SND_FILENAME | SND_ASYNC);
+
+        // ✅ 게임 오버 화면
         int boxX = 45;
         int boxY = 16;
 
