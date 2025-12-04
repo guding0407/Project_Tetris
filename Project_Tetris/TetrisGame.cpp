@@ -43,17 +43,24 @@ void TetrisGame::inputData() {
     ConsoleHelper::setCursorPosition(x, y++); std::cout << "┃ RIGHT: Move Right          ┃";
     ConsoleHelper::setCursorPosition(x, y++); std::cout << "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛";
 
+    ConsoleHelper::setCursorPosition(10, 3);
+    ConsoleHelper::setColor(WHITE);
+    std::cout << "Select Start level[1-8]:          ";
+
     while (1) {
-        ConsoleHelper::setCursorPosition(10, 3);
-        ConsoleHelper::setColor(WHITE);
-        std::cout << "Select Start level[1-8]:          ";
+        
         ConsoleHelper::setCursorPosition(35, 3);
 
-        char buf[10];
-        cin >> buf;
-        int sel = atoi(buf);
-        if (sel >= 1 && sel <= 8) {
-            startLevel = sel - 1;
+        char key = _getch();
+
+        // 1~8 사이의 숫자키인지 확인
+        if (key >= '1' && key <= '8') {
+            // 입력한 숫자 화면에 찍어주기 (시각적 피드백)
+            std::cout << key;
+            Sleep(200); // 사용자가 자신이 누른 키를 볼 수 있게 0.2초 대기
+
+            // 아스키코드 계산: '1'(49) - '1'(49) = 0 -> startLevel = 0
+            startLevel = key - '1';
             break;
         }
     }
