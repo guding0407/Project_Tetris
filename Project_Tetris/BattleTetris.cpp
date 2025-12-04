@@ -142,15 +142,15 @@ void BattleTetris::run() {
             int boxX = 42;
             int boxY = 12;
 
-            ConsoleHelper::write(boxX, boxY++, "┏━━━━━━━━━━━━━━━┓", YELLOW);
-            ConsoleHelper::write(boxX, boxY++, "┃                              ┃", YELLOW);
+            ConsoleHelper::write(boxX, boxY++, "┏━━━━━━━━━━━━━━┓", YELLOW);
+            ConsoleHelper::write(boxX, boxY++, "┃                            ┃", YELLOW);
 
-            if (winner == 1) ConsoleHelper::write(boxX, boxY, "┃       PLAYER 1 WIN!          ┃", YELLOW);
-            else             ConsoleHelper::write(boxX, boxY, "┃       PLAYER 2 WIN!          ┃", YELLOW);
+            if (winner == 1) ConsoleHelper::write(boxX, boxY, "┃       PLAYER 1 WIN!        ┃", YELLOW);
+            else             ConsoleHelper::write(boxX, boxY, "┃       PLAYER 2 WIN!        ┃", YELLOW);
             boxY++;
 
-            ConsoleHelper::write(boxX, boxY++, "┃                              ┃", YELLOW);
-            ConsoleHelper::write(boxX, boxY++, "┗━━━━━━━━━━━━━━━┛", YELLOW);
+            ConsoleHelper::write(boxX, boxY++, "┃                            ┃", YELLOW);
+            ConsoleHelper::write(boxX, boxY++, "┗━━━━━━━━━━━━━━┛", YELLOW);
 
             if (player1.getScore() >= WINNING_SCORE || player2.getScore() >= WINNING_SCORE) {
                 ConsoleHelper::write(boxX + 2, boxY + 1, "       SCORE REACHED!      ", GREEN);
