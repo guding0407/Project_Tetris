@@ -85,7 +85,7 @@ void BattleTetris::run() {
     std::cout << "     UPGRADE TETRIS        ";
     
     ConsoleHelper::setCursorPosition(10, 4);
-    if (waterMode) {
+    if (isWaterMode) {
         std::cout << "2-PLAYER BATTLE (SEA LEVEL)";
     }
     else {
