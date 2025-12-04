@@ -120,6 +120,11 @@ void BattleTetris::run() {
     Sleep(500);
     GetAsyncKeyState(VK_RETURN);
 
+    // 점수 기반 공격 플래그 (300 / 600 / 900)
+    static bool p1Attack[3] = { false, false, false };
+    static bool p2Attack[3] = { false, false, false };
+
+
     bool p1_rotate_pressed = false;
     bool p1_drop_pressed = false;
     bool p2_rotate_pressed = false;
@@ -175,6 +180,37 @@ void BattleTetris::run() {
             PlaySound(NULL, 0, 0);
             break;
         }
+
+        // P1 → P2 공격
+        int p1Score = player1.getScore();
+        if (!p1Attack[0] && p1Score >= 300) {
+            player2.addGarbageLines(1);
+            p1Attack[0] = true;
+        }
+        if (!p1Attack[1] && p1Score >= 600) {
+            player2.addGarbageLines(1);
+            p1Attack[1] = true;
+        }
+        if (!p1Attack[2] && p1Score >= 900) {
+            player2.addGarbageLines(1);
+            p1Attack[2] = true;
+        }
+
+        // P2 → P1 공격
+        int p2Score = player2.getScore();
+        if (!p2Attack[0] && p2Score >= 300) {
+            player1.addGarbageLines(1);
+            p2Attack[0] = true;
+        }
+        if (!p2Attack[1] && p2Score >= 600) {
+            player1.addGarbageLines(1);
+            p2Attack[1] = true;
+        }
+        if (!p2Attack[2] && p2Score >= 900) {
+            player1.addGarbageLines(1);
+            p2Attack[2] = true;
+        }
+
 
         if (p1_move_timer > 0) p1_move_timer--;
         if (p2_move_timer > 0) p2_move_timer--;
