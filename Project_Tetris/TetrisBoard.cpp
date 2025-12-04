@@ -73,14 +73,27 @@ void TetrisBoard::raiseWaterLevel() {
 
 void TetrisBoard::lowerWaterLevel() {
     if (waterHeight <= 0) return;
+
+    // 현재 물의 가장 윗부분 (이제 블록이 채워질 공간)
     int targetRow = 20 - waterHeight;
 
-    for (int j = 1; j < 13; j++) {
-        if (total_block[targetRow][j] == WATER_BLOCK) {
-            total_block[targetRow][j] = EMPTY_BLOCK;
+    // [핵심 변경] 단순히 물만 지우는 게 아니라, 
+    // 물 위에 있던 모든 블록들을 아래로 한 칸씩 '이사' 시킵니다.
+    for (int i = targetRow; i > 0; i--) {
+        for (int j = 1; j < 13; j++) {
+            total_block[i][j] = total_block[i - 1][j];
         }
     }
+
+    // 맨 윗줄은 비워줍니다 (천장이 내려오진 않으니까요)
+    for (int j = 1; j < 13; j++) {
+        total_block[0][j] = EMPTY_BLOCK;
+    }
+
     waterHeight--;
+
+    // 데이터만 수정하면, 이후 메인 루프의 draw()에서 
+    // 내려앉은 전체 화면을 예쁘게 그려줄 것입니다.
 }
 
 int TetrisBoard::getBlock(int y, int x) const {
