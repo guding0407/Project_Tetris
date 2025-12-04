@@ -22,6 +22,7 @@
     <ClInclude Include="BattleTetris.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="ConsoleHelper.h" />
+    <ClInclude Include="GameMode.h" />
     <ClInclude Include="TetrisBlock.h" />
     <ClInclude Include="TetrisBoard.h" />
     <ClInclude Include="TetrisCore.h" />
