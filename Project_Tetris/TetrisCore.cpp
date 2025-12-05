@@ -1,4 +1,7 @@
-﻿#include "TetrisCore.h"
+﻿#include <windows.h>
+#include <mmsystem.h>
+#pragma comment(lib, "winmm.lib")
+#include "TetrisCore.h"
 #include "ConsoleHelper.h"
 
 TetrisCore::TetrisCore(int x, int y, bool waterMode, bool isBattle) {

@@ -1,4 +1,7 @@
-﻿#include "BattleTetris.h"
+﻿#include <windows.h>
+#include <mmsystem.h>
+#pragma comment(lib, "winmm.lib")
+#include "BattleTetris.h"
 #include "TetrisCore.h"
 #include "ConsoleHelper.h"
 #include <iostream>
@@ -101,6 +104,10 @@ void BattleTetris::run() {
     showControls();
 
     system("cls");
+    PlaySound(L"gamestart-272829.wav", NULL, SND_FILENAME | SND_ASYNC);
+    Sleep(2000);   // 효과음 들릴 시간 확보
+
+    PlaySound(L"90s-drums-432390.wav", NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
     ConsoleHelper::setCursorVisible(false);
 
     // [수정] 멤버 변수 isWaterMode 사용
@@ -139,6 +146,8 @@ void BattleTetris::run() {
         else if (player2.getScore() >= WINNING_SCORE) winner = 2;
 
         if (winner != 0) {
+            PlaySound(L"game-over-arcade-6435.wav", NULL, SND_FILENAME | SND_ASYNC);
+            Sleep(2000);   // 효과음 끝까지 재생
             int boxX = 42;
             int boxY = 12;
 
@@ -164,6 +173,11 @@ void BattleTetris::run() {
 
             while (_kbhit()) _getch();
             _getch();
+            PlaySound(L"bonus-points-190035.wav", NULL, SND_FILENAME | SND_ASYNC);
+            Sleep(2000);   // 효과음 끝까지 재생
+
+            // ✅ 배틀 BGM 정지
+            PlaySound(NULL, 0, 0);
             break;
         }
 
@@ -239,7 +253,11 @@ void BattleTetris::run() {
             if (moved) p2_move_timer = MOVE_SPEED;
         }
 
-        if (GetAsyncKeyState(KEY_ESC) & 0x8000) break;
+        if (GetAsyncKeyState(KEY_ESC) & 0x8000) {
+            PlaySound(NULL, 0, 0);
+            break;
+        }
+
 
         player1.updateLogic();
         player1.draw();
