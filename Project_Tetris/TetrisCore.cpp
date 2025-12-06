@@ -89,7 +89,6 @@ void TetrisCore::updateLogic() {
     speed_counter++;
     if (speed_counter >= stage_data[level].speed) {
         speed_counter = 0;
-        // [Rule 1] 참조자 사용 (주소 연산자 & 제거)
         int result = moveBlock(block_shape, block_angle, block_x, block_y, next_block_shape);
         if (result == 1) is_gameover = true;
         showCurBlock(block_shape, block_angle, block_x, block_y);
@@ -148,14 +147,12 @@ bool TetrisCore::handleInput(int key) {
         break;
     case KEY_DOWN:
     {
-        // [Rule 1] 참조자 사용 (주소 연산자 & 제거)
         int result = moveBlock(block_shape, block_angle, block_x, block_y, next_block_shape);
         if (result == 1) is_gameover = true;
         acted = true;
         break;
     }
     case KEY_SPACE:
-        // [Rule 1] 참조자 사용 (주소 연산자 & 제거)
         while (moveBlock(block_shape, block_angle, block_x, block_y, next_block_shape) == 0);
         acted = true;
         break;
@@ -174,8 +171,6 @@ void TetrisCore::checkFullLine() {
     int cleared = board.deleteFullLines(ab_x, ab_y);
     if (cleared > 0) {
         lines += cleared;
-
-        // [수정] 콤보 보너스 제거 -> 단순 비례 계산으로 변경
         
         // 최종 점수: 기본 점수 * 지운 줄 수
         int unitScore = 100;
@@ -258,7 +253,6 @@ void TetrisCore::eraseCurBlock(int shape, int angle, int x, int y) {
 }
 
 int TetrisCore::strikeCheck(int shape, int angle, int x, int y) {
-    // getShapeMask 대신 기존 getShape 사용
     for (int r = 0; r < 4; r++) {
         for (int c = 0; c < 4; c++) {
             if (!TetrisBlock::getShape(shape, angle, r, c)) continue;
@@ -287,9 +281,7 @@ void TetrisCore::mergeBlock(int shape, int angle, int x, int y) {
     board.drawBoard(level);
 }
 
-// [Rule 1] 인자 타입 int&로 변경
 int TetrisCore::moveBlock(int& shape, int& angle, int& x, int& y, int& next_shape) {
-    // [Rule 1] 포인터 역참조(*) 제거
     eraseCurBlock(shape, angle, x, y);
     y++;
 

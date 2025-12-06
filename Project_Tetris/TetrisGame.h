@@ -1,8 +1,8 @@
 #pragma once
-#include "GameMode.h" // [중요] 부모 헤더 포함
+#include "GameMode.h" // 부모 헤더 포함
 #include "TetrisCore.h"
 
-// [상속] GameMode를 상속받음
+// GameMode를 상속받음
 class TetrisGame : public GameMode {
 private:
     bool isWaterMode;
@@ -14,6 +14,6 @@ private:
 public:
     TetrisGame(bool waterMode);
 
-    // [다형성] 부모의 가상 함수 오버라이딩
+    // 부모의 가상 함수 오버라이딩(다형성)
     void run() override;
 };

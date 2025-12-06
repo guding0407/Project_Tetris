@@ -1,11 +1,10 @@
 ﻿#include "ConsoleHelper.h"
-// <cstdio> 제거 (C++ cout 사용)
 
 Pixel ConsoleHelper::frontBuffer[SCREEN_HEIGHT][SCREEN_WIDTH];
 Pixel ConsoleHelper::backBuffer[SCREEN_HEIGHT][SCREEN_WIDTH];
 
 void ConsoleHelper::init() {
-    // [Rule 7] C++ 입출력 속도 향상 (printf와 동기화 끔)
+    // C++ 입출력 속도 향상 (printf와 동기화 끔)
     std::ios::sync_with_stdio(false);
     std::cout.tie(nullptr);
 
@@ -59,7 +58,7 @@ void ConsoleHelper::write(int x, int y, std::string str, int color) {
 }
 
 void ConsoleHelper::writeInt(int x, int y, int num, int color) {
-    // [Rule 7] sprintf 대신 std::to_string 사용
+    // sprintf 대신 std::to_string 사용
     write(x, y, std::to_string(num), color);
 }
 
@@ -77,12 +76,10 @@ void ConsoleHelper::render() {
                 (backBuffer[y][x].content != frontBuffer[y][x].content ||
                     backBuffer[y][x].color != frontBuffer[y][x].color))
             {
-                // [Rule 6] static_cast 사용
-                COORD pos = { static_cast<SHORT>(x), static_cast<SHORT>(y) };
+                COORD pos = { static_cast<SHORT>(x), static_cast<SHORT>(y) };   // static_cast
                 SetConsoleCursorPosition(hConsole, pos);
                 SetConsoleTextAttribute(hConsole, backBuffer[y][x].color);
 
-                // [Rule 7] printf -> std::cout
                 std::cout << backBuffer[y][x].content;
 
                 frontBuffer[y][x] = backBuffer[y][x];
@@ -103,8 +100,7 @@ void ConsoleHelper::setCursorVisible(bool visible) {
 
 void ConsoleHelper::setCursorPosition(int x, int y) {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    // [Rule 6] static_cast
-    COORD pos = { static_cast<SHORT>(x), static_cast<SHORT>(y) };
+    COORD pos = { static_cast<SHORT>(x), static_cast<SHORT>(y) };   // static_cast
     SetConsoleCursorPosition(hConsole, pos);
 }
 

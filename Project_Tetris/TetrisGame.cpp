@@ -13,7 +13,7 @@ TetrisGame::TetrisGame(bool waterMode) {
     startLevel = 0;
 }
 
-void TetrisGame::showLogo() {
+void TetrisGame::showLogo() {       // 오프닝 로고
     PlaySound(L"gamestart-272829", NULL, SND_FILENAME | SND_SYNC);
     system("cls");
     ConsoleHelper::setCursorVisible(false);
@@ -39,7 +39,7 @@ void TetrisGame::showLogo() {
     system("cls");
 }
 
-void TetrisGame::inputData() {
+void TetrisGame::inputData() {      // 시작 레벨 입력 및 조작법 설명
     ConsoleHelper::setColor(GRAY);
     int x = 10, y = 7;
     ConsoleHelper::setCursorPosition(x, y++); std::cout << "┏━━━━━━━━━━<GAME KEY>━━━━━━━━┓";
@@ -78,7 +78,7 @@ void TetrisGame::run() {
 
         ConsoleHelper::init();
 
-        TetrisCore game(4, 2, isWaterMode, false);
+        TetrisCore game(4, 2, isWaterMode, false);  // TetrisCore 객체 생성
         game.initGame(startLevel);
 
         // ✅ 배경음 시작 (무한 반복)
@@ -131,6 +131,10 @@ void TetrisGame::run() {
 
         while (_kbhit()) _getch();
         _getch();
+
+        PlaySound(L"bonus-points-190035.wav", NULL, SND_FILENAME | SND_ASYNC);
+        Sleep(1000);   // 효과음 끝까지 재생
+
         break;
     }
 }

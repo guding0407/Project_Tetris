@@ -9,7 +9,7 @@
 
 using namespace std;
 
-// [Rule 2] #define -> constexpr (컴파일 타임 상수)
+// constexpr (컴파일 타임 상수)
 constexpr int KEY_LEFT = 0x4b;
 constexpr int KEY_RIGHT = 0x4d;
 constexpr int KEY_UP = 0x48;

@@ -1,4 +1,4 @@
-﻿#include "GameMode.h" // [중요] 부모 클래스 헤더 포함
+﻿#include "GameMode.h"
 #include "TetrisGame.h"
 #include "BattleTetris.h"
 #include "ConsoleHelper.h"
@@ -42,7 +42,7 @@ int main() {
         // --- 입력 대기 ---
         char choice = MenuEffect::waitForInputWithAnimation();
 
-        // [핵심] 다형성(Polymorphism) 적용
+        // 다형성(Polymorphism) 적용
         // 부모 클래스(GameMode) 포인터로 자식 객체를 가리킴
         GameMode* game = nullptr;
 
@@ -66,7 +66,7 @@ int main() {
             break;
         }
 
-        // [핵심] 다형성을 통해 실행
+        // 다형성을 통해 실행
         // game이 TetrisGame인지 BattleTetris인지 몰라도 run() 하나로 실행됨
         if (game != nullptr) {
             game->run();

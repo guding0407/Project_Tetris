@@ -3,7 +3,7 @@
 #include "TetrisBoard.h"
 #include "TetrisBlock.h"
 
-class TetrisCore {
+class TetrisCore { // TetrisBlock과 TetrisBoard를 조립하여 실제 게임 규칙을 돌리는 엔진 역할
 protected:
     TetrisBoard board;
     Stage stage_data[10];
@@ -47,10 +47,9 @@ protected:
     void showNextBlock(int shape);
     void showGameStat();
 
-    int strikeCheck(int shape, int angle, int x, int y);
+    int strikeCheck(int shape, int angle, int x, int y);    // 블록이 벽이나 다른 블록에 부딪혔는지 검사
     void mergeBlock(int shape, int angle, int x, int y);
 
-    // [Rule 1] 포인터(*) -> 참조자(&)로 변경
     int moveBlock(int& shape, int& angle, int& x, int& y, int& next_shape);
 
     void checkFullLine();

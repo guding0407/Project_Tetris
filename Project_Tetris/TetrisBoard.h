@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "Common.h"
 
-class TetrisBoard {
+class TetrisBoard {     // 게임이 진행되는 격자판(20행 14열)을 관리
 private:
     char total_block[21][14];
     int ab_x, ab_y;

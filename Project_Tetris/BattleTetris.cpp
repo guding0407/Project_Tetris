@@ -72,8 +72,8 @@ void BattleTetris::showControls() {
     system("cls");
 }
 
-// [수정] 인자 없는 run() 구현
 void BattleTetris::run() {
+    PlaySound(L"gamestart-272829", NULL, SND_FILENAME | SND_SYNC);
     ConsoleHelper::init();
 
     system("cls");
@@ -81,6 +81,9 @@ void BattleTetris::run() {
 
     ConsoleHelper::setColor(SKY_BLUE);
     ConsoleHelper::setCursorPosition(10, 3);
+
+    // ✅ 시작 효과음
+    PlaySound(L"8-bit-heaven-26287.wav", NULL, SND_FILENAME | SND_ASYNC);
 
     std::cout << "     UPGRADE TETRIS        ";
     
@@ -182,33 +185,35 @@ void BattleTetris::run() {
         }
 
         // P1 → P2 공격
-        int p1Score = player1.getScore();
-        if (!p1Attack[0] && p1Score >= 300) {
-            player2.addGarbageLines(1);
-            p1Attack[0] = true;
-        }
-        if (!p1Attack[1] && p1Score >= 600) {
-            player2.addGarbageLines(1);
-            p1Attack[1] = true;
-        }
-        if (!p1Attack[2] && p1Score >= 900) {
-            player2.addGarbageLines(1);
-            p1Attack[2] = true;
-        }
+        if (isWaterMode) {
+            int p1Score = player1.getScore();
+            if (!p1Attack[0] && p1Score >= 300) {
+                player2.addGarbageLines(1);
+                p1Attack[0] = true;
+            }
+            if (!p1Attack[1] && p1Score >= 600) {
+                player2.addGarbageLines(1);
+                p1Attack[1] = true;
+            }
+            if (!p1Attack[2] && p1Score >= 900) {
+                player2.addGarbageLines(1);
+                p1Attack[2] = true;
+            }
 
-        // P2 → P1 공격
-        int p2Score = player2.getScore();
-        if (!p2Attack[0] && p2Score >= 300) {
-            player1.addGarbageLines(1);
-            p2Attack[0] = true;
-        }
-        if (!p2Attack[1] && p2Score >= 600) {
-            player1.addGarbageLines(1);
-            p2Attack[1] = true;
-        }
-        if (!p2Attack[2] && p2Score >= 900) {
-            player1.addGarbageLines(1);
-            p2Attack[2] = true;
+            // P2 → P1 공격
+            int p2Score = player2.getScore();
+            if (!p2Attack[0] && p2Score >= 300) {
+                player1.addGarbageLines(1);
+                p2Attack[0] = true;
+            }
+            if (!p2Attack[1] && p2Score >= 600) {
+                player1.addGarbageLines(1);
+                p2Attack[1] = true;
+            }
+            if (!p2Attack[2] && p2Score >= 900) {
+                player1.addGarbageLines(1);
+                p2Attack[2] = true;
+            }
         }
 
 
