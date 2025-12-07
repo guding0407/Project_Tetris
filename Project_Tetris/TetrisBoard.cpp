@@ -20,7 +20,7 @@ void TetrisBoard::initBoard() {
             else total_block[i][j] = EMPTY_BLOCK;
         }
     }
-    // [중요] 바닥 벽 설정 (이게 없으면 뚫림)
+    // 바닥 벽 설정 (이게 없으면 뚫림)
     for (int j = 0; j < 14; j++) total_block[20][j] = WALL_BLOCK;
     waterHeight = 0;
 }
@@ -77,23 +77,18 @@ void TetrisBoard::lowerWaterLevel() {
     // 현재 물의 가장 윗부분 (이제 블록이 채워질 공간)
     int targetRow = 20 - waterHeight;
 
-    // [핵심 변경] 단순히 물만 지우는 게 아니라, 
-    // 물 위에 있던 모든 블록들을 아래로 한 칸씩 '이사' 시킵니다.
+    // 물 위에 있던 모든 블록들을 아래로 한 칸씩 이동.
     for (int i = targetRow; i > 0; i--) {
         for (int j = 1; j < 13; j++) {
             total_block[i][j] = total_block[i - 1][j];
         }
     }
 
-    // 맨 윗줄은 비워줍니다 (천장이 내려오진 않으니까요)
+    // 맨 윗줄은 비우기
     for (int j = 1; j < 13; j++) {
         total_block[0][j] = EMPTY_BLOCK;
     }
-
     waterHeight--;
-
-    // 데이터만 수정하면, 이후 메인 루프의 draw()에서 
-    // 내려앉은 전체 화면을 예쁘게 그려줄 것입니다.
 }
 
 int TetrisBoard::getBlock(int y, int x) const {
@@ -122,7 +117,7 @@ int TetrisBoard::deleteFullLines(int ab_x, int ab_y) {
         if (j == 13) {
             linesCleared++;
 
-            // [핵심 수정 1] 애니메이션 시작 전에 배경(현재 화면)을 복구!
+            // 애니메이션 시작 전에 배경(현재 화면)을 복구!
             // 이걸 안 하면 빈 화면에서 파란 블록만 깜빡거립니다.
             ConsoleHelper::recover();
 
@@ -133,7 +128,7 @@ int TetrisBoard::deleteFullLines(int ab_x, int ab_y) {
                 Sleep(10);
             }
 
-            // [핵심 수정 2] 이펙트 지우기 
+            // 이펙트 지우기 
             // write로 지우고 바로 render하지 말고, 
             // recover()로 다시 배경을 불러온 뒤 해당 줄만 지우는 것이 더 안전합니다.
             // 하지만 간단하게 공백으로 덮고 render해도 됩니다.

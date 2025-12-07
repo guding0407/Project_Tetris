@@ -42,7 +42,7 @@ int main() {
         // --- 입력 대기 ---
         char choice = MenuEffect::waitForInputWithAnimation();
 
-        // 다형성(Polymorphism) 적용
+        // 다형성
         // 부모 클래스(GameMode) 포인터로 자식 객체를 가리킴
         GameMode* game = nullptr;
 
@@ -67,7 +67,7 @@ int main() {
         }
 
         // 다형성을 통해 실행
-        // game이 TetrisGame인지 BattleTetris인지 몰라도 run() 하나로 실행됨
+        // game이 TetrisGame인지 BattleTetris인지 몰라도 run() 하나로 실행
         if (game != nullptr) {
             game->run();
 

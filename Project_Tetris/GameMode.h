@@ -1,6 +1,6 @@
 #pragma once
 
-// [상속/다형성] 부모 클래스 (추상 클래스)
+// 부모 클래스 (추상 클래스)
 class GameMode {
 public:
     virtual ~GameMode() {} // 가상 소멸자

@@ -11,7 +11,7 @@ constexpr int VK_A = 0x41;
 constexpr int VK_S = 0x53;
 constexpr int VK_D = 0x44;
 
-// [수정] 생성자 구현: waterMode를 멤버 변수로 저장
+// 생성자 구현: waterMode를 멤버 변수로 저장
 BattleTetris::BattleTetris(bool waterMode) : isWaterMode(waterMode) {}
 
 void BattleTetris::showControls() {
@@ -113,7 +113,7 @@ void BattleTetris::run() {
     PlaySound(L"90s-drums-432390.wav", NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
     ConsoleHelper::setCursorVisible(false);
 
-    // [수정] 멤버 변수 isWaterMode 사용
+    // 멤버 변수 isWaterMode 사용
     TetrisCore player1(4, 2, isWaterMode, true);
     TetrisCore player2(50, 2, isWaterMode, true);
 
